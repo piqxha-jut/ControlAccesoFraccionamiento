@@ -1,0 +1,258 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.Notificacione>
+@{
+    ViewData["Title"] = "Notificaciones - Solicitudes de Acceso";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 6px 15px rgba(245, 158, 11, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-bell-fill"></i> Solicitudes de Acceso
+                </h2>
+                <p style="margin: 10px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
+                    Gestiona las solicitudes de ingreso a tu vivienda
+                </p>
+            </div>
+            <a href="/Residente/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #10b981;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.2rem;"></i>
+                <div>
+                    @TempData["Mensaje"]
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ef4444;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    @TempData["Error"]
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- SECCIÓN 1: SOLICITUDES PENDIENTES -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-hourglass-split"></i> Solicitudes Pendientes
+            </h3>
+            <span style="background: rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                @(ViewBag.Pendientes?.Count ?? 0) esperando
+            </span>
+        </div>
+
+        <div style="padding: 0 20px 20px;">
+            @if (ViewBag.Pendientes != null && ViewBag.Pendientes.Count > 0)
+            {
+                <div style="overflow-x: auto;">
+                    <table class="table table-hover" style="margin-bottom: 0; width: 100%; border-collapse: collapse;">
+                        <thead style="background: #fffbeb;">
+                            <tr>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Fecha Solicitud</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Visitante</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Vehículo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Motivo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var notif in ViewBag.Pendientes)
+                            {
+                                <tr style="border-bottom: 1px solid #fef3c7;">
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.FechaEnvio?.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.RegistroAcceso?.Visitante?.Nombre
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.RegistroAcceso?.Vehiculo?.Placa
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle; color: #4b5563;">
+                                        @notif.RegistroAcceso?.MotivoVisita
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <form method="post" action="/Residente/ResponderNotificacion" style="display: inline;">
+                                                <input type="hidden" name="notificacionId" value="@notif.Id" />
+                                                <input type="hidden" name="autorizar" value="true" />
+                                                <button type="submit" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                    <i class="bi bi-check-circle"></i> Autorizar
+                                                </button>
+                                            </form>
+
+                                            <form method="post" action="/Residente/ResponderNotificacion" style="display: inline;">
+                                                <input type="hidden" name="notificacionId" value="@notif.Id" />
+                                                <input type="hidden" name="autorizar" value="false" />
+                                                <button type="submit" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                    <i class="bi bi-x-circle"></i> Rechazar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div style="padding: 40px 20px; text-align: center;">
+                    <i class="bi bi-check-circle" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                    <p style="color: #6b7280; font-size: 1.1rem;">No tienes solicitudes pendientes.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: HISTORIAL DE RESPUESTAS -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-clock-history"></i> Historial de Tus Respuestas
+            </h3>
+            <span style="background: rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                @(ViewBag.Respondidas?.Count ?? 0) respuestas
+            </span>
+        </div>
+
+        <div style="padding: 0 20px 20px;">
+            @if (ViewBag.Respondidas != null && ViewBag.Respondidas.Count > 0)
+            {
+                <div style="overflow-x: auto;">
+                    <table class="table table-hover" style="margin-bottom: 0; width: 100%; border-collapse: collapse;">
+                        <thead style="background: #eff6ff;">
+                            <tr>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Fecha Respuesta</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Visitante</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Vehículo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Motivo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Tu Respuesta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var notif in ViewBag.Respondidas)
+                            {
+                                <tr style="border-bottom: 1px solid #e5e7eb;">
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.FechaRespuesta?.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.RegistroAcceso?.Visitante?.Nombre
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @notif.RegistroAcceso?.Vehiculo?.Placa
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle; color: #4b5563;">
+                                        @notif.RegistroAcceso?.MotivoVisita
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (notif.RespuestaResidente == "aprobado")
+                                        {
+                                            <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-check-circle"></i> APROBADO
+                                            </span>
+                                        }
+                                        else if (notif.RespuestaResidente == "rechazado")
+                                        {
+                                            <span style="background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-x-circle"></i> RECHAZADO
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div style="padding: 40px 20px; text-align: center;">
+                    <i class="bi bi-chat-left" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                    <p style="color: #6b7280; font-size: 1.1rem;">Aún no has respondido ninguna solicitud.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    a[href="/Residente/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        .table-responsive {
+            margin: 0 -10px;
+            padding: 0 10px;
+        }
+
+        .table th, .table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+            .action-buttons form {
+                width: 100%;
+            }
+
+            .action-buttons button {
+                width: 100%;
+                justify-content: center;
+            }
+    }
+
+    @@media (max-width: 480px) {
+        .table th, .table td {
+            font-size: 12px !important;
+            padding: 10px 6px !important;
+        }
+    }
+</style>

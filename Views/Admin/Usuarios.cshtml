@@ -1,0 +1,481 @@
+﻿@model IEnumerable<Usuario>
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-person-gear"></i> Gestión de Usuarios
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Administra los usuarios del sistema de control de acceso
+                </p>
+            </div>
+            <a href="/Admin/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #10b981; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+                <span>@TempData["Mensaje"]</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-exclamation-circle-fill" style="color: #ef4444;"></i>
+                <span>@TempData["Error"]</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 1: NUEVO USUARIO -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #4b5563;">
+                <i class="bi bi-person-plus"></i> Nuevo Usuario
+            </h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <form asp-action="CrearUsuario" method="post">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <!-- Nombre -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-person"></i> Nombre
+                        </label>
+                        <input type="text" name="nombre" class="form-control" required />
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+
+                    <!-- Rol -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-shield"></i> Rol
+                        </label>
+                        <select name="rol" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="admin">Administrador</option>
+                            <option value="guardia">Guardia</option>
+                        </select>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-telephone"></i> Teléfono
+                        </label>
+                        <input type="text" name="telefono" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Información y Botón -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div style="color: #6b7280; font-size: 0.875rem; flex: 1; background: #f3f4f6; padding: 10px 15px; border-radius: 6px;">
+                        <i class="bi bi-info-circle"></i> La contraseña inicial será "123". El usuario deberá cambiarla al primer ingreso.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                        <i class="bi bi-plus-circle"></i> Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 2: LISTADO DE USUARIOS -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #4b5563;">
+                    <i class="bi bi-people"></i> Usuarios Registrados
+                </h3>
+                <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 0.95rem;">
+                    Total: <strong>@Model.Count()</strong> usuarios en el sistema
+                </p>
+            </div>
+
+            <div style="color: #6b7280; font-size: 14px; background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-person-check"></i>
+                @Model.Count() registros
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div style="padding: 60px 20px; text-align: center;">
+                <i class="bi bi-people" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No hay usuarios registrados</p>
+                <p style="color: #9ca3af;">Usa el formulario superior para crear nuevos usuarios</p>
+            </div>
+        }
+        else
+        {
+            <!-- Tabla -->
+            <div style="overflow-x: auto; padding: 0 20px 20px;">
+                <table class="table table-hover" style="margin-bottom: 0;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">ID</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Nombre</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Email</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Rol</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Teléfono</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Último Acceso</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Estado</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in Model)
+                        {
+                            <tr>
+                                <!-- ID -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="color: #6b7280; font-family: monospace; font-size: 13px;">#@usuario.Id</span>
+                                </td>
+
+                                <!-- Nombre -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 600; color: #1f2937;">@usuario.Nombre</div>
+                                    @if (usuario.Rol == "residente" && usuario.Residente != null)
+                                    {
+                                        <div style="font-size: 13px; color: #6b7280; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-house"></i> Unidad: @usuario.Residente.Unidad
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Email -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="color: #4b5563;">@usuario.Email</div>
+                                </td>
+
+                                <!-- Rol -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @{
+                                        string rolColor = "#7c3aed";
+                                        string rolBgColor = "#f3e8ff";
+                                        string rolIcon = "bi-shield-check";
+
+                                        if (usuario.Rol == "guardia")
+                                        {
+                                            rolColor = "#059669";
+                                            rolBgColor = "#d1fae5";
+                                            rolIcon = "bi-shield";
+                                        }
+                                        else if (usuario.Rol == "residente")
+                                        {
+                                            rolColor = "#3b82f6";
+                                            rolBgColor = "#dbeafe";
+                                            rolIcon = "bi-house";
+                                        }
+                                    }
+                                    <span style="background: @rolBgColor; color: @rolColor; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                        <i class="bi @rolIcon"></i>
+                                        @usuario.Rol.ToUpper()
+                                    </span>
+                                </td>
+
+                                <!-- Teléfono -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(usuario.Telefono))
+                                    {
+                                        <div style="color: #4b5563; display: flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-telephone"></i>
+                                            @usuario.Telefono
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px;">-</span>
+                                    }
+                                </td>
+
+                                <!-- Último Acceso -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (usuario.UltimoAcceso.HasValue)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-calendar-check" style="color: #8b5cf6;"></i>
+                                            <div>
+                                                <div style="font-weight: 500; color: #1f2937;">@usuario.UltimoAcceso.Value.ToString("dd/MM/yyyy")</div>
+                                                <div style="font-size: 13px; color: #6b7280;">@usuario.UltimoAcceso.Value.ToString("HH:mm")</div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic; font-size: 14px;">Nunca</span>
+                                    }
+                                </td>
+
+                                <!-- Estado -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (usuario.Rol == "residente" && usuario.Residente != null)
+                                    {
+                                        bool estado = usuario.Residente.Activo.GetValueOrDefault();
+
+                                        if (estado)
+                                        {
+                                            <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-check-circle"></i> Activo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span style="background: #f3f4f6; color: #6b7280; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-x-circle"></i> Inactivo
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #dbeafe; color: #1d4ed8; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-check-circle"></i> Activo
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- Acciones -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="display: flex; gap: 8px;">
+                                        <!-- Botón Editar -->
+                                        <button class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditar_@usuario.Id"
+                                                style="display: flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+
+                                        <!-- Botón Eliminar -->
+                                        <button class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEliminar_@usuario.Id"
+                                                style="display: flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- MODALES (se renderizan fuera del contenedor principal) -->
+<!-- ============================================= -->
+@foreach (var usuario in Model)
+{
+    <!-- Modal Editar -->
+    <div class="modal fade" id="modalEditar_@usuario.Id" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="ActualizarUsuario" method="post">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                        <h5 class="modal-title" style="display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-pencil-square"></i> Editar Usuario
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <input type="hidden" name="Id" value="@usuario.Id" />
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> Nombre
+                            </label>
+                            <input type="text" class="form-control" name="Nombre" value="@usuario.Nombre" required />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-envelope"></i> Email
+                            </label>
+                            <input type="email" class="form-control" name="Email" value="@usuario.Email" required />
+                        </div>
+
+                        <!-- Rol -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-shield"></i> Rol
+                            </label>
+                            <select class="form-select" name="Rol" required>
+                                <option value="admin" selected="@(usuario.Rol == "admin")">Administrador</option>
+                                <option value="guardia" selected="@(usuario.Rol == "guardia")">Guardia</option>
+                                <option value="residente" selected="@(usuario.Rol == "residente")">Residente</option>
+                            </select>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-telephone"></i> Teléfono
+                            </label>
+                            <input type="text" class="form-control" name="Telefono" value="@usuario.Telefono" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@foreach (var usuario in Model)
+{
+    <!-- Modal Eliminar -->
+    <div class="modal fade" id="modalEliminar_@usuario.Id" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="EliminarUsuario" method="post">
+                    <input type="hidden" name="Id" value="@usuario.Id" />
+
+                    <div class="modal-header" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        <h5 class="modal-title" style="display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-exclamation-triangle"></i> Eliminar Usuario
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div style="text-align: center; margin: 20px 0;">
+                            <i class="bi bi-person-x" style="font-size: 48px; color: #ef4444; margin-bottom: 15px;"></i>
+                            <p style="color: #1f2937; font-size: 1.1rem; margin-bottom: 10px;">
+                                ¿Estás seguro de eliminar al usuario <strong>@usuario.Nombre</strong>?
+                            </p>
+                            <p style="color: #991b1b; font-size: 0.95rem;">
+                                <i class="bi bi-exclamation-circle"></i> Esta acción no se puede deshacer
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    /* Efectos hover para la tabla */
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc !important;
+        transition: background-color 0.2s;
+    }
+
+    /* Estilos para botones */
+    .btn-primary {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        border: none;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .table-responsive {
+            margin: 0 -10px;
+            padding: 0 10px;
+        }
+
+        .table th, .table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .modal-buttons {
+            flex-direction: column;
+            gap: 10px !important;
+        }
+
+            .modal-buttons button {
+                width: 100%;
+            }
+    }
+</style>

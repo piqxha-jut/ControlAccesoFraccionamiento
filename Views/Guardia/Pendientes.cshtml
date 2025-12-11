@@ -1,0 +1,370 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.RegistrosAcceso>
+@{
+    ViewBag.Title = "Solicitudes Pendientes";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-clock-history"></i> Solicitudes de Acceso Pendientes
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Panel del Guardia - Gestiona solicitudes de acceso vehicular
+                </p>
+            </div>
+            <a href="/Guardia/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ef4444;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Error:</strong> @TempData["Error"]
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #10b981;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>@TempData["Mensaje"]</strong>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- SECCIÓN 1: SOLICITUDES PENDIENTES -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-hourglass-split"></i> Solicitudes Pendientes de Respuesta
+            </h3>
+            <span style="background: rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <i class="bi bi-list-check"></i> @Model.Count pendientes
+            </span>
+        </div>
+
+        <div style="padding: 0 20px 20px;">
+            @if (Model.Count == 0)
+            {
+                <div style="padding: 60px 20px; text-align: center;">
+                    <i class="bi bi-check-circle" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                    <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No hay solicitudes pendientes</p>
+                    <p style="color: #9ca3af;">Todas las solicitudes han sido respondidas</p>
+                </div>
+            }
+            else
+            {
+                <div style="overflow-x: auto;">
+                    <table class="table table-hover" style="margin-bottom: 0;">
+                        <thead style="background: #fffbeb;">
+                            <tr>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">ID</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Placa</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Visitante</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Destino</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Motivo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Hora Entrada</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Estado</th>
+                                <th style="padding: 16px; font-weight: 600; color: #92400e; border-bottom: 1px solid #fde68a;">Esperando a</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr style="border-bottom: 1px solid #fef3c7;">
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <span style="color: #6b7280; font-family: monospace; font-size: 13px;">#@item.Id</span>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="font-weight: 600; font-family: monospace; font-size: 1.1rem; color: #1f2937;">
+                                            @(item.Vehiculo?.Placa ?? "N/A")
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="font-weight: 600; color: #1f2937;">@(item.Visitante?.Nombre ?? "N/A")</div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-house" style="color: #8b5cf6;"></i>
+                                            <span style="font-weight: 600; color: #7c3aed;">@(item.ResidenteDestino?.Unidad ?? "N/A")</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle; color: #4b5563; max-width: 200px;">
+                                        @item.MotivoVisita
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-clock" style="color: #059669;"></i>
+                                            <span style="font-weight: 500; color: #1f2937;">
+                                                @String.Format("{0:HH:mm}", item.FechaEntrada)
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (item.EstadoAcceso == "fuera")
+                                        {
+                                            <span style="background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-hourglass-split"></i> PENDIENTE
+                                            </span>
+                                        }
+                                        else if (item.EstadoAcceso == "dentro")
+                                        {
+                                            <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-check-circle"></i> APROBADO
+                                            </span>
+                                        }
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 8px; color: #7c3aed; font-weight: 600;">
+                                            <i class="bi bi-person"></i>
+                                            @(item.ResidenteDestino?.Unidad ?? "N/A")
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: RESPUESTAS RECIENTES -->
+    @if (ViewBag.Recientes != null && ViewBag.Recientes.Count > 0)
+    {
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-chat-left-text"></i> Respuestas de Residentes (Últimas 24 horas)
+                </h3>
+                <span style="background: rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-check-all"></i> @ViewBag.Recientes.Count respuestas
+                </span>
+            </div>
+
+            <div style="padding: 0 20px 20px;">
+                <div style="overflow-x: auto;">
+                    <table class="table table-hover" style="margin-bottom: 0;">
+                        <thead style="background: #eff6ff;">
+                            <tr>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Placa</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Visitante</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Destino</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Motivo</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Hora Entrada</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Respuesta</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Residente</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Hora Respuesta</th>
+                                <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #dbeafe;">Acción para Guardia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var notificacion in ViewBag.Recientes)
+                            {
+                                var registro = notificacion.RegistroAcceso;
+                                <tr style="border-bottom: 1px solid #e5e7eb;">
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="font-weight: 600; font-family: monospace; font-size: 1.1rem; color: #1f2937;">
+                                            @(registro?.Vehiculo?.Placa ?? "N/A")
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="font-weight: 600; color: #1f2937;">@(registro?.Visitante?.Nombre ?? "N/A")</div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-house" style="color: #8b5cf6;"></i>
+                                            <span style="font-weight: 600; color: #7c3aed;">@(registro?.ResidenteDestino?.Unidad ?? "N/A")</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle; color: #4b5563; max-width: 180px;">
+                                        @registro?.MotivoVisita
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (registro?.FechaEntrada != null)
+                                        {
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="bi bi-clock" style="color: #059669;"></i>
+                                                <span style="font-weight: 500; color: #1f2937;">
+                                                    @String.Format("{0:HH:mm}", registro.FechaEntrada)
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #9ca3af; font-style: italic;">N/A</span>
+                                        }
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (notificacion.RespuestaResidente == "aprobado")
+                                        {
+                                            <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-check-circle"></i> APROBADO
+                                            </span>
+                                        }
+                                        else if (notificacion.RespuestaResidente == "rechazado")
+                                        {
+                                            <span style="background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-x-circle"></i> RECHAZADO
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span style="background: #f3f4f6; color: #6b7280; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+                                                @notificacion.RespuestaResidente
+                                            </span>
+                                        }
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 8px; color: #7c3aed; font-weight: 600;">
+                                            <i class="bi bi-person-check"></i>
+                                            @(notificacion.Residente?.Unidad ?? "N/A")
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (notificacion.FechaRespuesta != null)
+                                        {
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="bi bi-clock-history" style="color: #8b5cf6;"></i>
+                                                <span style="font-weight: 500; color: #1f2937;">
+                                                    @String.Format("{0:HH:mm}", notificacion.FechaRespuesta)
+                                                </span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #9ca3af; font-style: italic;">No registrada</span>
+                                        }
+                                    </td>
+                                    <td style="padding: 16px; vertical-align: middle;">
+                                        @if (notificacion.RespuestaResidente == "aprobado" && registro?.EstadoAcceso == "dentro")
+                                        {
+                                            <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-check-lg"></i> PERMITIR INGRESO
+                                            </span>
+                                        }
+                                        else if (notificacion.RespuestaResidente == "aprobado" && registro?.EstadoAcceso == "salio")
+                                        {
+                                            <span style="background: #f3f4f6; color: #6b7280; padding: 8px 16px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-clock-history"></i> YA SALIÓ
+                                            </span>
+                                            <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
+                                                @if (registro?.FechaSalida != null)
+                                                {
+                                                    <span>Salió a las @String.Format("{0:HH:mm}", registro.FechaSalida)</span>
+                                                }
+                                            </div>
+                                        }
+                                        else if (notificacion.RespuestaResidente == "rechazado")
+                                        {
+                                            <span style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                                <i class="bi bi-x-lg"></i> NO PERMITIR INGRESO
+                                            </span>
+                                            @if (registro?.FechaSalida != null)
+                                            {
+                                                <div style="font-size: 12px; color: #991b1b; margin-top: 4px; font-weight: 500;">
+                                                    <i class="bi bi-car-front"></i> Salió a las @String.Format("{0:HH:mm}", registro.FechaSalida)
+                                                </div>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="font-size: 14px; color: #6b7280; margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Mostrando las últimas @ViewBag.Recientes.Count respuestas de residentes en las últimas 24 horas.</span>
+                </div>
+            </div>
+        </div>
+    }
+    else if (ViewBag.Recientes != null)
+    {
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 18px 24px;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-chat-left-text"></i> Respuestas de Residentes
+                </h3>
+            </div>
+
+            <div style="padding: 60px 20px; text-align: center;">
+                <i class="bi bi-chat-left" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No hay respuestas recientes</p>
+                <p style="color: #9ca3af;">No se han recibido respuestas de residentes en las últimas 24 horas</p>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    /* Efectos hover */
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc !important;
+        transition: background-color 0.2s;
+    }
+
+    a[href="/Guardia/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        .table-responsive {
+            margin: 0 -10px;
+            padding: 0 10px;
+        }
+
+        .table th, .table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .modal-content {
+            width: 95% !important;
+            margin: 0 auto;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .table th, .table td {
+            font-size: 12px !important;
+            padding: 10px 6px !important;
+        }
+
+        .badge {
+            font-size: 11px !important;
+            padding: 4px 8px !important;
+        }
+    }
+</style>

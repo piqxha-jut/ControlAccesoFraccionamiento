@@ -1,0 +1,369 @@
+﻿@{
+    ViewBag.Title = "Registrar Entrada";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 800px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #059669, #047857); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-car-front-fill"></i> Registrar Entrada de Vehículo
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Registra el ingreso de vehículos al fraccionamiento
+                </p>
+            </div>
+            <a href="/Guardia/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Error"] != null)
+    {
+        <div id="error-message" style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ef4444;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 1.2rem; margin-top: 2px;"></i>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 5px;">Error en el registro</div>
+                    <div>@TempData["Error"]</div>
+                    @if (TempData["Error"]?.ToString()?.Contains("YA ESTÁ DENTRO") == true)
+                    {
+                        <div style="margin-top: 12px;">
+                            <a href="/Guardia/RegistrarSalida"
+                               style="background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
+                                <i class="bi bi-car-front"></i> Ir a Registrar Salida
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #10b981;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Registro exitoso:</strong> @TempData["Mensaje"]
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Alerta"] != null)
+    {
+        <div style="background: #fef3c7; color: #92400e; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #f59e0b;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-info-circle-fill" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Atención:</strong> @TempData["Alerta"]
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Formulario principal -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f0fdf4; padding: 18px 24px; border-bottom: 1px solid #bbf7d0;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #065f46;">
+                <i class="bi bi-pencil-square"></i> Datos de la Entrada
+            </h3>
+        </div>
+
+        <div style="padding: 30px;">
+            <form method="post" action="/Guardia/RegistrarEntrada">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 25px;">
+                    <!-- Placa del vehículo -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #059669; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-123"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Placa del vehículo</span>
+                            </div>
+                        </label>
+                        <input type="text"
+                               name="placa"
+                               required
+                               class="form-control"
+                               placeholder="Ej: ABC123, XYZ789, etc."
+                               style="padding: 14px 16px; font-size: 1.1rem; font-family: monospace; letter-spacing: 1px; border: 2px solid #d1d5db; border-radius: 8px; width: 100%; transition: all 0.2s;"
+                               onfocus="this.style.borderColor='#059669'; this.style.boxShadow='0 0 0 3px rgba(5, 150, 105, 0.1)';"
+                               onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';" />
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Ingresa la placa completa del vehículo que está ingresando</span>
+                        </div>
+                    </div>
+
+                    <!-- Nombre del visitante -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #8b5cf6; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Nombre del visitante</span>
+                                <span style="background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                    Opcional
+                                </span>
+                            </div>
+                        </label>
+                        <input type="text"
+                               name="nombreVisitante"
+                               class="form-control"
+                               placeholder="Ej: Juan Pérez, María González, etc."
+                               style="padding: 14px 16px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; width: 100%;"
+                               onfocus="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 0 0 3px rgba(139, 92, 246, 0.1)';"
+                               onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';" />
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Ingresa solo para visitantes. Los residentes se identifican automáticamente por la placa.</span>
+                        </div>
+                    </div>
+
+                    <!-- Unidad que visita -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #f59e0b; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-house"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Unidad que visita</span>
+                            </div>
+                        </label>
+                        <select name="unidadDestino"
+                                required
+                                class="form-select"
+                                style="padding: 14px 16px; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; width: 100%; background: white; color: #4b5563; transition: all 0.2s;"
+                                onfocus="this.style.borderColor='#f59e0b'; this.style.boxShadow='0 0 0 3px rgba(245, 158, 11, 0.1)';"
+                                onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';">
+                            <option value="" disabled selected>-- Seleccionar unidad --</option>
+                            @foreach (var unidad in ViewBag.Unidades)
+                            {
+                                <option value="@unidad">@unidad</option>
+                            }
+                        </select>
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-building"></i>
+                            <span>Selecciona la unidad residencial que está visitando</span>
+                        </div>
+                    </div>
+
+                    <!-- Motivo de visita -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #3b82f6; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-card-text"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Motivo de visita</span>
+                            </div>
+                        </label>
+                        <textarea name="motivoVisita"
+                                  rows="4"
+                                  class="form-control"
+                                  placeholder="Ej: Entrega de paquete, Visita familiar, Reunión de trabajo, Mantenimiento, etc."
+                                  style="padding: 14px 16px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; width: 100%; resize: vertical; min-height: 100px; transition: all 0.2s;"
+                                  onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                                  onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';"></textarea>
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-chat-left-text"></i>
+                            <span>Describe brevemente el propósito de la visita</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div style="display: flex; gap: 15px; justify-content: flex-end; border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 30px;">
+                    <a href="/Guardia/Index"
+                       class="btn btn-secondary"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit"
+                            class="btn btn-success"
+                            style="background: linear-gradient(135deg, #059669, #047857); display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: none;">
+                        <i class="bi bi-check-circle"></i> Registrar Entrada
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Información importante -->
+    <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 25px; margin-top: 30px;">
+        <h4 style="margin: 0 0 15px 0; color: #374151; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-info-circle"></i> Información importante sobre el registro
+        </h4>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="background: #d1fae5; color: #065f46; min-width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-house-check"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">Residentes</div>
+                    <div style="font-size: 14px; color: #6b7280;">Se identifican automáticamente por su placa registrada</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="background: #e0f2fe; color: #0369a1; min-width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">Visitantes</div>
+                    <div style="font-size: 14px; color: #6b7280;">Requieren nombre para su registro y seguimiento</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="background: #fef3c7; color: #92400e; min-width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">Preaprobados</div>
+                    <div style="font-size: 14px; color: #6b7280;">Si el visitante está preaprobado, ingresa directamente</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <div style="background: #fce7f3; color: #be185d; min-width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">Autorización</div>
+                    <div style="font-size: 14px; color: #6b7280;">Si no está preaprobado, se solicita autorización al residente</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    button:hover, .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    a[href="/Guardia/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Efecto para las tarjetas de información */
+    div[style*="display: flex; align-items: flex-start; gap: 12px;"]:hover {
+        transform: translateX(5px);
+        transition: transform 0.2s;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 800px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        div[style*="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))"] {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+        }
+
+        .form-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            .form-buttons button, .form-buttons a {
+                width: 100%;
+                justify-content: center;
+            }
+    }
+
+    @@media (max-width: 480px) {
+        .info-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .form-section {
+            padding: 20px !important;
+        }
+    }
+</style>
+
+<script>
+    // Desvanecer mensaje de error después de 5 segundos
+    document.addEventListener('DOMContentLoaded', function () {
+        var errorMsg = document.getElementById('error-message');
+        if (errorMsg) {
+            setTimeout(function () {
+                errorMsg.style.opacity = '0';
+                errorMsg.style.transition = 'opacity 0.5s';
+                setTimeout(function () {
+                    errorMsg.style.display = 'none';
+                }, 500);
+            }, 5000);
+        }
+
+        // Validación básica del formulario
+        const form = document.querySelector('form');
+        const placaInput = document.querySelector('input[name="placa"]');
+        const unidadSelect = document.querySelector('select[name="unidadDestino"]');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Validar placa
+                if (!placaInput.value.trim()) {
+                    e.preventDefault();
+                    alert('Por favor ingresa la placa del vehículo');
+                    placaInput.focus();
+                    placaInput.style.borderColor = '#ef4444';
+                    placaInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    return false;
+                }
+
+                // Validar unidad
+                if (!unidadSelect.value) {
+                    e.preventDefault();
+                    alert('Por favor selecciona la unidad que visita');
+                    unidadSelect.focus();
+                    unidadSelect.style.borderColor = '#ef4444';
+                    unidadSelect.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Resetear estilos de validación al cambiar
+        placaInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            }
+        });
+
+        unidadSelect.addEventListener('change', function() {
+            if (this.value) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            }
+        });
+    });
+</script>

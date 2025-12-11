@@ -1,0 +1,262 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.Incidente>
+
+@{
+    ViewData["Title"] = "Incidentes";
+    Layout = "_Layout";
+
+    // Diccionario: IdUsuario → NombreUsuario
+    var usuarios = ViewBag.Usuarios as Dictionary<int, string>;
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
+        <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+            <i class="bi bi-exclamation-triangle-fill"></i> Incidentes Reportados
+        </h2>
+        <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem;">
+            Lista de incidentes registrados en el sistema
+        </p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <!-- Sin incidentes -->
+        <div style="background: white; padding: 40px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 25px;">
+            <i class="bi bi-shield-check" style="font-size: 48px; color: #10b981; margin-bottom: 15px;"></i>
+            <p style="color: #065f46; font-size: 1.1rem; font-weight: 500; margin-bottom: 10px;">No hay incidentes registrados</p>
+            <p style="color: #6b7280; font-size: 0.95rem;">El sistema se encuentra sin incidentes reportados</p>
+        </div>
+    }
+    else
+    {
+        <!-- Tabla de incidentes -->
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">
+                        <tr>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-flag-fill"></i> Tipo
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-calendar-event"></i> Fecha
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-car-front"></i> Vehículo
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-person"></i> Visitante
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-house-door"></i> Unidad destino
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-person-badge"></i> Reportado por
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #b91c1c;">
+                                <i class="bi bi-card-text"></i> Descripción
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var i in Model)
+                        {
+                            <tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.2s;">
+                                <!-- Tipo de incidente -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(i.TipoIncidente))
+                                    {
+                                        <span style="
+                                                background: #fee2e2;
+                                                color: #b91c1c;
+                                                padding: 6px 10px;
+                                                border-radius: 6px;
+                                                font-size: 14px;
+                                                font-weight: 600;
+                                                display: inline-block;
+                                                border-left: 3px solid #dc2626;">
+                                            @i.TipoIncidente
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic;">Sin tipo</span>
+                                    }
+                                </td>
+
+                                <!-- Fecha -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (i.FechaCreacion.HasValue)
+                                    {
+                                        <div style="font-weight: 500; color: #1f2937;">
+                                            @i.FechaCreacion.Value.ToString("dd/MM/yyyy")
+                                        </div>
+                                        <div style="font-size: 13px; color: #ef4444; font-weight: 500;">
+                                            <i class="bi bi-clock"></i> @i.FechaCreacion.Value.ToString("HH:mm")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic; font-size: 14px;">Sin fecha</span>
+                                    }
+                                </td>
+
+                                <!-- Vehículo -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(i.RegistroAcceso?.Vehiculo?.Placa))
+                                    {
+                                        <span style="background: #f1f5f9; font-family: monospace; padding: 6px 10px; border-radius: 4px; font-weight: 500; display: inline-block; border-left: 3px solid #ef4444;">
+                                            @i.RegistroAcceso.Vehiculo.Placa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px;">Sin vehículo</span>
+                                    }
+                                </td>
+
+                                <!-- Visitante -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="font-weight: 500; color: #1f2937;">
+                                        @(i.RegistroAcceso?.Visitante?.Nombre ?? "No identificado")
+                                    </span>
+                                </td>
+
+                                <!-- Unidad destino -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(i.RegistroAcceso?.ResidenteDestino?.Unidad))
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-house" style="color: #7c3aed;"></i>
+                                            <span style="font-weight: 500; color: #7c3aed;">
+                                                @i.RegistroAcceso.ResidenteDestino.Unidad
+                                            </span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px;">-</span>
+                                    }
+                                </td>
+
+                                <!-- Reportado por -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (i.ReportadoPor.HasValue && usuarios != null && usuarios.ContainsKey(i.ReportadoPor.Value))
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-shield-exclamation" style="color: #f59e0b;"></i>
+                                            <span style="font-weight: 500; color: #1f2937;">
+                                                @usuarios[i.ReportadoPor.Value]
+                                            </span>
+                                        </div>
+                                    }
+                                    else if (i.ReportadoPor.HasValue)
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px;">Desconocido</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px; font-style: italic;">No registrado</span>
+                                    }
+                                </td>
+
+                                <!-- Descripción -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="
+                                                background: #fef2f2;
+                                                border-left: 3px solid #ef4444;
+                                                padding: 10px 12px;
+                                                border-radius: 4px;
+                                                color: #7f1d1d;
+                                                font-size: 14px;
+                                                line-height: 1.4;
+                                                max-width: 300px;
+                                                word-wrap: break-word;">
+                                        @if (!string.IsNullOrEmpty(i.Descripcion))
+                                        {
+                                            @i.Descripcion
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #9ca3af; font-style: italic;">Sin descripción</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resumen y estadísticas -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="background: #fee2e2; color: #ef4444; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280;">Total Incidentes</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #dc2626;">@Model.Count</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="background: #fef3c7; color: #f59e0b; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-calendar-week"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280;">Este Mes</div>
+                        <div style="font-size: 24px; font-weight: 700; color: #d97706;">@Model.Count</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Botón regresar -->
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <a href="/Admin/Index" style="background: #4b5563; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: background 0.2s;">
+            <i class="bi bi-arrow-left"></i> Regresar al Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Estilos para hover -->
+<style>
+    /* Efecto al pasar el mouse sobre las filas */
+    table tbody tr:hover {
+        background-color: #fef2f2;
+    }
+
+    /* Efecto hover en botón */
+    a[href="/Admin/Index"]:hover {
+        background: #374151;
+        text-decoration: none;
+    }
+
+    /* Responsive para móviles */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        table th, table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        .encabezado {
+            padding: 20px 15px !important;
+        }
+
+        .estadisticas {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>

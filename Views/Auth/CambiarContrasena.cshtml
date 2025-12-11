@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Cambiar Contraseña";
+    // UrlRetorno viene del controlador, ya procesada con Url.Action
+    var urlRetorno = ViewBag.UrlRetorno as string ?? "/";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-key"></i> Cambiar Contraseña
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Usuario: <strong>@ViewBag.Nombre</strong>
+                        <span class="badge bg-info">@ViewBag.Rol</span>
+                    </p>
+
+                    @if (TempData["Mensaje"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Mensaje"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="contrasenaActual" class="form-label">
+                                <i class="bi bi-lock"></i> Contraseña Actual
+                            </label>
+                            <input type="password" class="form-control" id="contrasenaActual"
+                                   name="contrasenaActual" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nuevaContrasena" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Nueva Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="nuevaContrasena"
+                                   name="nuevaContrasena" required>
+                            <div class="form-text">Mínimo 4 caracteres</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirmarContrasena" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Confirmar Nueva Contraseña
+                            </label>
+                            <input type="password" class="form-control" id="confirmarContrasena"
+                                   name="confirmarContrasena" required>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Cambiar Contraseña
+                            </button>
+
+                            <!-- ESTE es el botón que usa urlRetorno -->
+                            <a href="@urlRetorno" class="btn btn-secondary ms-2">
+                                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                            </a>
+                        </div>
+                    </form>
+
+                    <hr>
+
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Nota:</strong> Después de cambiar tu contraseña, deberás usarla en tu próximo inicio de sesión.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

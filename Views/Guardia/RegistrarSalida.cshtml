@@ -1,0 +1,234 @@
+﻿@{
+    ViewBag.Title = "Registrar Salida";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 800px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-car-front"></i> Registrar Salida de Vehículo
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Registra la salida de vehículos del fraccionamiento
+                </p>
+            </div>
+            <a href="/Guardia/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ef4444;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Error:</strong> @TempData["Error"]
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #fef3c7; color: #92400e; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #f59e0b;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-info-circle-fill" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Notificación:</strong> @TempData["Mensaje"]
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Formulario principal -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #eff6ff; padding: 18px 24px; border-bottom: 1px solid #dbeafe;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #1e40af;">
+                <i class="bi bi-clipboard-check"></i> Formulario de Salida
+            </h3>
+        </div>
+
+        <div style="padding: 30px;">
+            <form method="post" action="/Guardia/RegistrarSalida">
+                <!-- Campo de placa -->
+                <div style="margin-bottom: 30px;">
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <div style="background: #3b82f6; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-123"></i>
+                            </div>
+                            <span style="font-size: 1.1rem;">Placa del vehículo</span>
+                        </div>
+                    </label>
+                    <div style="position: relative;">
+                        <input type="text" name="placa" required
+                               class="form-control"
+                               placeholder="Ej: ABC123, XYZ789, etc."
+                               style="padding: 14px 16px 14px 48px; font-size: 1.1rem; font-family: monospace; letter-spacing: 1px; border: 2px solid #d1d5db; border-radius: 8px; width: 100%; transition: all 0.2s;"
+                               onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)';"
+                               onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';" />
+                        <div style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #6b7280;">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                    </div>
+                    <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Ingresa la placa completa del vehículo que está saliendo</span>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div style="display: flex; gap: 15px; justify-content: flex-end; border-top: 1px solid #e5e7eb; padding-top: 30px;">
+                    <a href="/Guardia/Index"
+                       class="btn btn-secondary"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: none;">
+                        <i class="bi bi-check-circle"></i> Registrar Salida
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 25px; margin-top: 30px;">
+        <div style="display: flex; align-items: flex-start; gap: 15px;">
+            <div style="background: #dbeafe; color: #1d4ed8; min-width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="bi bi-info-circle"></i>
+            </div>
+            <div>
+                <h4 style="margin: 0 0 10px 0; color: #374151; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-exclamation-diamond"></i> Información importante
+                </h4>
+                <div style="color: #4b5563;">
+                    <p style="margin: 0 0 10px 0;"><strong>Requisitos para registrar salida:</strong></p>
+                    <ul style="margin: 0; padding-left: 20px; color: #6b7280;">
+                        <li>El vehículo debe tener una entrada registrada previamente</li>
+                        <li>La entrada debe estar activa (no haber registrado salida anteriormente)</li>
+                        <li>El vehículo debe estar actualmente dentro del fraccionamiento</li>
+                        <li>No se pueden registrar salidas para vehículos que ya han salido</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pasos del proceso -->
+    <div style="margin-top: 40px;">
+        <h4 style="color: #4b5563; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-list-check"></i> Pasos del proceso
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; text-align: center;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: 600; font-size: 1.2rem;">
+                    1
+                </div>
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">Ingresar Placa</div>
+                <div style="font-size: 14px; color: #6b7280;">Introduce la placa del vehículo que está saliendo</div>
+            </div>
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; text-align: center;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: 600; font-size: 1.2rem;">
+                    2
+                </div>
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">Validar Información</div>
+                <div style="font-size: 14px; color: #6b7280;">El sistema verificará que el vehículo tenga entrada activa</div>
+            </div>
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; text-align: center;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: 600; font-size: 1.2rem;">
+                    3
+                </div>
+                <div style="font-weight: 600; color: #1f2937; margin-bottom: 8px;">Registrar Salida</div>
+                <div style="font-size: 14px; color: #6b7280;">Confirma la salida y registra la hora exacta de salida</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    button:hover, .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    a[href="/Guardia/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Efecto para las tarjetas de pasos */
+    div[style*="background: white; border: 1px solid #e5e7eb;"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 800px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        div[style*="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+            grid-template-columns: 1fr !important;
+        }
+
+        .form-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            .form-buttons button, .form-buttons a {
+                width: 100%;
+                justify-content: center;
+            }
+    }
+
+    @@media (max-width: 480px) {
+        .info-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<script>
+    // Validación simple en cliente para formato de placa
+    document.addEventListener('DOMContentLoaded', function() {
+        const placaInput = document.querySelector('input[name="placa"]');
+        const form = document.querySelector('form');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const placa = placaInput.value.trim();
+
+                if (placa.length < 3) {
+                    e.preventDefault();
+                    alert('Por favor ingresa una placa válida (mínimo 3 caracteres)');
+                    placaInput.focus();
+                    return false;
+                }
+
+                // Puedes agregar más validaciones aquí si es necesario
+                return true;
+            });
+        }
+    });
+</script>

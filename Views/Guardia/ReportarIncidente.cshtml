@@ -1,0 +1,300 @@
+﻿@{
+    ViewData["Title"] = "Reportar Incidente";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 800px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-exclamation-octagon-fill"></i> Reportar Incidente
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Registra incidentes o situaciones que requieren atención
+                </p>
+            </div>
+            <a href="/Guardia/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes de error -->
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ef4444;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-exclamation-triangle-fill" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Error:</strong> @TempData["Error"]
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Formulario principal -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #fef2f2; padding: 18px 24px; border-bottom: 1px solid #fecaca;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #991b1b;">
+                <i class="bi bi-clipboard-plus"></i> Formulario de Reporte
+            </h3>
+        </div>
+
+        <div style="padding: 30px;">
+            <form method="post" action="/Guardia/ReportarIncidente">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 25px;">
+                    <!-- Tipo de Incidente -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #ef4444; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Tipo de Incidente</span>
+                            </div>
+                        </label>
+                        <select name="tipo" class="form-select" required
+                                style="padding: 14px 16px; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; width: 100%; background: white; color: #4b5563; transition: all 0.2s;"
+                                onfocus="this.style.borderColor='#ef4444'; this.style.boxShadow='0 0 0 3px rgba(239, 68, 68, 0.1)';"
+                                onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';">
+                            <option value="" disabled selected>-- Seleccione un tipo de incidente --</option>
+                            <option value="Acceso denegado - lista negra">🚫 Vehículo en lista negra</option>
+                            <option value="Vehículo estacionado en área prohibida">🅿️ Vehículo estacionado en área prohibida</option>
+                            <option value="Visitante sospechoso">👤 Visitante sospechoso</option>
+                            <option value="Comportamiento agresivo">😠 Comportamiento agresivo</option>
+                            <option value="Intento de acceso no autorizado">🚧 Intento de acceso no autorizado</option>
+                            <option value="Problema con residente">🏠 Problema con residente</option>
+                            <option value="Daños a propiedad">🔨 Daños a propiedad</option>
+                            <option value="Ruido excesivo en zona residencial">🔊 Ruido excesivo en zona residencial</option>
+                            <option value="Otro">📋 Otro</option>
+                        </select>
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Selecciona el tipo de incidente que estás reportando</span>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div>
+                        <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #374151;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="background: #ef4444; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-card-text"></i>
+                                </div>
+                                <span style="font-size: 1.1rem;">Descripción del Incidente</span>
+                            </div>
+                            <div style="font-size: 14px; color: #6b7280; font-weight: normal;">
+                                Describe con detalle lo sucedido
+                            </div>
+                        </label>
+                        <textarea name="descripcion" rows="5" required
+                                  class="form-control"
+                                  placeholder="Describe el incidente con todos los detalles relevantes: fecha, hora, personas involucradas, acciones tomadas, etc."
+                                  style="padding: 14px 16px; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; width: 100%; resize: vertical; min-height: 120px; transition: all 0.2s;"
+                                  onfocus="this.style.borderColor='#ef4444'; this.style.boxShadow='0 0 0 3px rgba(239, 68, 68, 0.1)';"
+                                  onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';"></textarea>
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Sé lo más específico posible. Incluye fecha, hora y detalles importantes.</span>
+                        </div>
+                    </div>
+
+                    <!-- Información adicional (opcional) -->
+                    <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+                        <h4 style="margin: 0 0 15px 0; color: #4b5563; display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-plus-circle"></i> Información Adicional (Opcional)
+                        </h4>
+
+                        <!-- Placa del vehículo -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="bi bi-car-front"></i> Placa del vehículo
+                            </label>
+                            <input type="text" name="placa"
+                                   class="form-control"
+                                   placeholder="Ej: ABC123, XYZ789, etc."
+                                   style="padding: 12px 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; font-family: monospace; letter-spacing: 1px;"
+                                   onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.1)';"
+                                   onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';" />
+                            <div style="font-size: 13px; color: #9ca3af; margin-top: 6px;">
+                                Si el incidente involucra un vehículo, ingresa la placa
+                            </div>
+                        </div>
+
+                        <!-- Unidad destino -->
+                        <div>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                <i class="bi bi-house"></i> Unidad destino
+                            </label>
+                            <input type="text" name="unidad"
+                                   class="form-control"
+                                   placeholder="Ej: A101, B203, etc."
+                                   style="padding: 12px 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; font-family: monospace;"
+                                   onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.1)';"
+                                   onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';" />
+                            <div style="font-size: 13px; color: #9ca3af; margin-top: 6px;">
+                                Si el incidente está relacionado con una unidad específica
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div style="display: flex; gap: 15px; justify-content: flex-end; border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 30px;">
+                    <a href="/Guardia/Index"
+                       class="btn btn-secondary"
+                       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit"
+                            class="btn btn-danger"
+                            style="background: linear-gradient(135deg, #ef4444, #dc2626); display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: none;">
+                        <i class="bi bi-save"></i> Guardar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Información importante -->
+    <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1px solid #fbbf24; border-radius: 10px; padding: 25px; margin-top: 30px;">
+        <div style="display: flex; align-items: flex-start; gap: 15px;">
+            <div style="background: #d97706; color: white; min-width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="bi bi-exclamation-diamond"></i>
+            </div>
+            <div>
+                <h4 style="margin: 0 0 10px 0; color: #92400e; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-shield-check"></i> Directrices para Reportar Incidentes
+                </h4>
+                <div style="color: #92400e;">
+                    <p style="margin: 0 0 10px 0; font-weight: 600;">Por favor considera lo siguiente:</p>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>Reporta solo incidentes reales que requieran seguimiento</li>
+                        <li>Proporciona todos los detalles posibles en la descripción</li>
+                        <li>Si hay vehículos involucrados, registra la placa</li>
+                        <li>Si hay residentes involucrados, especifica la unidad</li>
+                        <li>Los reportes serán revisados por el administrador</li>
+                        <li>Usa este formulario para situaciones que afecten la seguridad</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    button:hover, .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    a[href="/Guardia/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Efecto para inputs y selects */
+    select:focus, textarea:focus, input:focus {
+        outline: none;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 800px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        .form-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            .form-buttons button, .form-buttons a {
+                width: 100%;
+                justify-content: center;
+            }
+
+        .info-section {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .form-grid {
+            gap: 20px !important;
+        }
+
+        .optional-info {
+            padding: 15px !important;
+        }
+    }
+</style>
+
+<script>
+    // Validación básica del formulario
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        const descripcionTextarea = document.querySelector('textarea[name="descripcion"]');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Validar tipo de incidente
+                if (!tipoSelect.value) {
+                    e.preventDefault();
+                    alert('Por favor selecciona un tipo de incidente');
+                    tipoSelect.focus();
+                    tipoSelect.style.borderColor = '#ef4444';
+                    tipoSelect.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    return false;
+                }
+
+                // Validar descripción
+                if (!descripcionTextarea.value.trim()) {
+                    e.preventDefault();
+                    alert('Por favor proporciona una descripción del incidente');
+                    descripcionTextarea.focus();
+                    descripcionTextarea.style.borderColor = '#ef4444';
+                    descripcionTextarea.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    return false;
+                }
+
+                // Validar longitud mínima de descripción
+                if (descripcionTextarea.value.trim().length < 10) {
+                    e.preventDefault();
+                    alert('La descripción debe tener al menos 10 caracteres');
+                    descripcionTextarea.focus();
+                    descripcionTextarea.style.borderColor = '#ef4444';
+                    descripcionTextarea.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Resetear estilos de validación al cambiar
+        tipoSelect.addEventListener('change', function() {
+            this.style.borderColor = '#10b981';
+            this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+        });
+
+        descripcionTextarea.addEventListener('input', function() {
+            if (this.value.trim().length >= 10) {
+                this.style.borderColor = '#10b981';
+                this.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            }
+        });
+    });
+</script>

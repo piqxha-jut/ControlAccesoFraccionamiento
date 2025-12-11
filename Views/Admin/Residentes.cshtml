@@ -1,0 +1,416 @@
+﻿@model IEnumerable<ControlAccesoFraccionamiento.Models.Residente>
+@{
+    ViewData["Title"] = "Gestión de Residentes";
+    Layout = "_Layout";
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-people-fill"></i> Gestión de Residentes
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Administra los residentes del fraccionamiento
+                </p>
+            </div>
+            <a href="/Admin/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #10b981; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+                <span>@TempData["Mensaje"]</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ef4444; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-exclamation-circle-fill" style="color: #ef4444;"></i>
+                <span>@TempData["Error"]</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 1: NUEVO RESIDENTE -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f0fdf4; padding: 18px 24px; border-bottom: 1px solid #bbf7d0;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #065f46;">
+                <i class="bi bi-person-plus"></i> Nuevo Residente
+            </h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <form asp-action="CrearResidente" method="post">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <!-- Nombre -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-person"></i> Nombre
+                        </label>
+                        <input type="text" name="nombre" class="form-control" required />
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-envelope"></i> Email
+                        </label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-telephone"></i> Teléfono
+                        </label>
+                        <input type="text" name="telefono" class="form-control" />
+                    </div>
+
+                    <!-- Unidad -->
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-house"></i> Unidad
+                        </label>
+                        <input type="text" name="unidad" class="form-control" required />
+                    </div>
+
+                    <!-- Dirección -->
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                            <i class="bi bi-geo-alt"></i> Dirección
+                        </label>
+                        <input type="text" name="direccion" class="form-control" required />
+                    </div>
+                </div>
+
+                <!-- Botón Crear -->
+                <div style="display: flex; justify-content: flex-end;">
+                    <button type="submit" class="btn btn-success" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                        <i class="bi bi-plus-circle"></i> Crear Residente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 2: LISTADO DE RESIDENTES -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #4b5563;">
+                    <i class="bi bi-list-check"></i> Listado de Residentes
+                </h3>
+                <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 0.95rem;">
+                    Total: <strong>@Model.Count()</strong> residentes registrados
+                </p>
+            </div>
+
+            <div style="color: #6b7280; font-size: 14px; background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-people"></i>
+                @Model.Count() registros
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div style="padding: 60px 20px; text-align: center;">
+                <i class="bi bi-people" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No hay residentes registrados</p>
+                <p style="color: #9ca3af;">Usa el formulario superior para crear nuevos residentes</p>
+            </div>
+        }
+        else
+        {
+            <!-- Tabla -->
+            <div style="overflow-x: auto; padding: 0 20px 20px;">
+                <table class="table table-hover" style="margin-bottom: 0;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">ID</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Nombre</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Unidad</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Dirección</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Vehículos</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Estado</th>
+                            <th style="padding: 16px; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            bool estado = r.Activo.GetValueOrDefault();
+
+                            <tr style="@(!estado ? "background-color: #f9fafb;" : "")">
+                                <!-- ID -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="color: #6b7280; font-family: monospace; font-size: 13px;">#@r.Id</span>
+                                </td>
+
+                                <!-- Nombre -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 600; color: #1f2937;">@r.Usuario?.Nombre</div>
+                                    <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
+                                        <i class="bi bi-envelope"></i> @r.Usuario?.Email
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(r.Usuario?.Telefono))
+                                    {
+                                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">
+                                            <i class="bi bi-telephone"></i> @r.Usuario?.Telefono
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Unidad -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="bi bi-house" style="color: #8b5cf6;"></i>
+                                        <span style="font-weight: 600; color: #7c3aed;">@r.Unidad</span>
+                                    </div>
+                                </td>
+
+                                <!-- Dirección -->
+                                <td style="padding: 16px; vertical-align: middle; color: #4b5563;">
+                                    @r.Direccion
+                                </td>
+
+                                <!-- Vehículos -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (r.VehiculosResidentes != null && r.VehiculosResidentes.Any())
+                                    {
+                                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                            @foreach (var v in r.VehiculosResidentes)
+                                            {
+                                                <span style="background: #dbeafe; color: #1d4ed8; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; font-family: monospace;">
+                                                    @v.Vehiculo?.Placa
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-size: 14px;">Sin vehículos</span>
+                                    }
+                                </td>
+
+                                <!-- Estado -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (estado)
+                                    {
+                                        <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-check-circle"></i> Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #f3f4f6; color: #6b7280; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-x-circle"></i> Inactivo
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- Acciones -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <!-- Botón Editar -->
+                                        <button class="btn btn-warning btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarResidente_@r.Id"
+                                                style="display: flex; align-items: center; gap: 6px; justify-content: center;">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+
+                                        <!-- Botón Eliminar -->
+                                        <form asp-action="EliminarResidente" method="post" style="margin: 0;">
+                                            <input type="hidden" name="id" value="@r.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('¿Estás seguro de eliminar al residente @r.Usuario?.Nombre? También se eliminará su usuario.')"
+                                                    style="display: flex; align-items: center; gap: 6px; justify-content: center; width: 100%;">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ============================================= -->
+<!-- MODALES (se renderizan fuera del contenedor principal) -->
+<!-- ============================================= -->
+@foreach (var r in Model)
+{
+    bool estado = r.Activo.GetValueOrDefault();
+
+    <!-- MODAL DE EDICIÓN -->
+    <div class="modal fade" id="modalEditarResidente_@r.Id" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-action="ActualizarResidente" method="post">
+                    <!-- Encabezado del modal -->
+                    <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                        <h5 class="modal-title" style="display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-pencil-square"></i> Editar Residente
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Cuerpo del modal -->
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="@r.Id" />
+
+                        <!-- Unidad -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-house"></i> Unidad
+                            </label>
+                            <input type="text" name="unidad" class="form-control" value="@r.Unidad" required />
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-geo-alt"></i> Dirección
+                            </label>
+                            <input type="text" name="direccion" class="form-control" value="@r.Direccion" required />
+                        </div>
+
+                        <!-- Activo -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-toggle2-on"></i> Estado
+                            </label>
+                            <select name="activo" class="form-select">
+                                <option value="true" selected="@estado">Activo</option>
+                                <option value="false" selected="@(!estado)">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Pie del modal -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    /* Efectos hover */
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc !important;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border: none;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    a[href="/Admin/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+            .form-grid div[style*="grid-column: span 2"] {
+                grid-column: span 1 !important;
+            }
+
+        .table-responsive {
+            margin: 0 -10px;
+            padding: 0 10px;
+        }
+
+        .table th, .table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px !important;
+            font-size: 13px !important;
+        }
+
+        .modal-dialog {
+            width: 95% !important;
+            margin: 10px auto !important;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .modal-buttons {
+            flex-direction: column;
+            gap: 10px !important;
+        }
+
+            .modal-buttons button {
+                width: 100%;
+            }
+    }
+</style>

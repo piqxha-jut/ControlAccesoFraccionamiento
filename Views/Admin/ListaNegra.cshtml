@@ -1,0 +1,347 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.VehiculosListaNegra>
+
+@{
+    ViewData["Title"] = "Lista Negra";
+    Layout = "_Layout";
+    var vehiculos = ViewBag.Vehiculos as List<ControlAccesoFraccionamiento.Models.Vehiculo>;
+}
+
+<div style="max-width: 1300px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #0f172a, #1e293b); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-shield-slash-fill"></i> Lista Negra
+                </h2>
+                <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem;">
+                    Gestión de vehículos con acceso denegado al fraccionamiento
+                </p>
+            </div>
+            <a href="/Admin/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background: #d1fae5; color: #065f46; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #10b981; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+            <span>@TempData["Mensaje"]</span>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ef4444; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-exclamation-circle-fill" style="color: #ef4444;"></i>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 1: VEHÍCULOS DEL SISTEMA -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #1e293b;">
+                <i class="bi bi-car-front"></i> Vehículos del Sistema
+            </h3>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.95rem;">
+                Todos los vehículos registrados. Puedes agregar a lista negra.
+            </p>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #f1f5f9;">
+                    <tr>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Placa</th>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Marca</th>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Modelo</th>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Color</th>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Tipo</th>
+                        <th style="padding: 16px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in vehiculos)
+                    {
+                        bool yaEnLista = v.VehiculosListaNegras.Any();
+
+                        // Determinar tipo de vehículo
+                        string tipoVehiculo = "Sin asignar";
+                        string tipoColor = "#6b7280";
+                        string tipoBgColor = "#f3f4f6";
+
+                        if (v.VehiculosResidentes != null && v.VehiculosResidentes.Any())
+                        {
+                            tipoVehiculo = "Residente";
+                            tipoColor = "#3b82f6";
+                            tipoBgColor = "#dbeafe";
+                        }
+                        else if (v.VehiculosVisitantes != null && v.VehiculosVisitantes.Any())
+                        {
+                            tipoVehiculo = "Visitante";
+                            tipoColor = "#f59e0b";
+                            tipoBgColor = "#fef3c7";
+                        }
+
+                        <tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.2s;">
+                            <!-- Placa -->
+                            <td style="padding: 16px; vertical-align: middle;">
+                                <span style="background: #f1f5f9; font-family: monospace; padding: 6px 10px; border-radius: 4px; font-weight: 600; color: #1e40af; border: 1px solid #dbeafe;">
+                                    @v.Placa
+                                </span>
+                            </td>
+
+                            <!-- Marca -->
+                            <td style="padding: 16px; vertical-align: middle; color: #4b5563;">@v.Marca</td>
+
+                            <!-- Modelo -->
+                            <td style="padding: 16px; vertical-align: middle; color: #4b5563;">@v.Modelo</td>
+
+                            <!-- Color -->
+                            <td style="padding: 16px; vertical-align: middle;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 16px; height: 16px; border-radius: 50%; background: #ccc; border: 1px solid #ddd;"></div>
+                                    <span style="color: #4b5563;">@v.Color</span>
+                                </div>
+                            </td>
+
+                            <!-- Tipo -->
+                            <td style="padding: 16px; vertical-align: middle;">
+                                <span style="background: @tipoBgColor; color: @tipoColor; padding: 5px 10px; border-radius: 12px; font-size: 13px; font-weight: 500; border: 1px solid @tipoColor;">
+                                    @tipoVehiculo
+                                </span>
+                            </td>
+
+                            <!-- Acción -->
+                            <td style="padding: 16px; vertical-align: middle;">
+                                @if (!yaEnLista)
+                                {
+                                    <!-- Botón para mostrar formulario -->
+                                    <button type="button" onclick="mostrarForm(@v.Id)"
+                                            style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                        <i class="bi bi-ban"></i> Agregar a lista negra
+                                    </button>
+
+                                    <!-- Formulario oculto -->
+                                    <div id="form_@v.Id" style="display:none; margin-top:12px; background: #f8fafc; border: 1px solid #e5e7eb; padding: 16px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                                        <form method="post" action="/Admin/AgregarListaNegra">
+                                            <input type="hidden" name="vehiculoId" value="@v.Id" />
+
+                                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                                                <i class="bi bi-card-text"></i> Razón para agregar a lista negra:
+                                            </label>
+                                            <textarea name="razon" required
+                                              style="width:100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; min-height: 80px; font-family: inherit; resize: vertical;"
+                                              placeholder="Describe la razón por la que este vehículo debe estar en lista negra..."></textarea>
+
+                                            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                                <button type="submit"
+                                                        style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: center;">
+                                                    <i class="bi bi-check-circle"></i> Confirmar
+                                                </button>
+                                                <button type="button" onclick="ocultarForm(@v.Id)"
+                                                        style="background: #6b7280; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: center;">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="background: #fee2e2; color: #991b1b; padding: 8px 12px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                        <i class="bi bi-slash-circle-fill"></i> YA EN LISTA NEGRA
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 2: VEHÍCULOS EN LISTA NEGRA -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #fef2f2; padding: 18px 24px; border-bottom: 1px solid #fee2e2;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #991b1b;">
+                <i class="bi bi-shield-slash"></i> Vehículos en Lista Negra
+            </h3>
+            <p style="margin: 5px 0 0 0; color: #92400e; font-size: 0.95rem;">
+                Estos vehículos tienen el acceso denegado al fraccionamiento
+            </p>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div style="padding: 40px 20px; text-align: center;">
+                <i class="bi bi-shield-check" style="font-size: 48px; color: #10b981; margin-bottom: 15px;"></i>
+                <p style="color: #065f46; font-size: 1.1rem; font-weight: 500;">No hay vehículos en lista negra</p>
+                <p style="color: #6b7280; margin-top: 5px;">Todos los vehículos tienen acceso permitido</p>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #fee2e2;">
+                        <tr>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Placa</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Vehículo</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Razón</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Agregado por</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Fecha</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; color: #991b1b; border-bottom: 1px solid #fecaca;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr style="border-bottom: 1px solid #fee2e2; transition: background 0.2s;">
+                                <!-- Placa -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="background: #fee2e2; font-family: monospace; padding: 6px 10px; border-radius: 4px; font-weight: 600; color: #dc2626; border: 1px solid #fecaca;">
+                                        @item.Vehiculo.Placa
+                                    </span>
+                                </td>
+
+                                <!-- Vehículo -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 500; color: #1f2937;">@item.Vehiculo.Marca @item.Vehiculo.Modelo</div>
+                                    <div style="font-size: 13px; color: #6b7280;">Color: @item.Vehiculo.Color</div>
+                                </td>
+
+                                <!-- Razón -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="background: #f8fafc; border-left: 3px solid #ef4444; padding: 10px 12px; border-radius: 4px; color: #7f1d1d; font-size: 14px; line-height: 1.4;">
+                                        @item.Razon
+                                    </div>
+                                </td>
+
+                                <!-- Agregado por -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="bi bi-person-badge" style="color: #f59e0b;"></i>
+                                        <span style="font-weight: 500; color: #1f2937;">
+                                            @(item.AgregadoPorNavigation?.Nombre ?? "Desconocido")
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Fecha -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 500; color: #1f2937;">
+                                        @item.FechaAgregado?.ToString("dd/MM/yyyy")
+                                    </div>
+                                    <div style="font-size: 13px; color: #6b7280;">
+                                        @item.FechaAgregado?.ToString("HH:mm")
+                                    </div>
+                                </td>
+
+                                <!-- Acción -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <form method="post" action="/Admin/RemoverListaNegra" style="margin: 0;">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit"
+                                                style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                            <i class="bi bi-check-circle"></i> Permitir acceso
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen -->
+            <div style="background: #f8fafc; padding: 15px 24px; border-top: 1px solid #e5e7eb;">
+                <div style="display: flex; align-items: center; gap: 10px; color: #6b7280; font-size: 14px;">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Total de vehículos en lista negra: <strong style="color: #991b1b;">@Model.Count</strong></span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Información adicional -->
+    <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border-left: 4px solid #0f172a;">
+        <div style="display: flex; align-items: start; gap: 15px;">
+            <div style="background: #0f172a; color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="bi bi-lightbulb"></i>
+            </div>
+            <div>
+                <h4 style="margin: 0 0 8px 0; color: #1e293b;">Instrucciones de uso</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #475569; line-height: 1.6;">
+                    <li>Para agregar un vehículo a lista negra, haz clic en <strong>"Agregar a lista negra"</strong></li>
+                    <li>Debes proporcionar una razón válida para restringir el acceso</li>
+                    <li>Los vehículos en lista negra serán denegados automáticamente en la caseta</li>
+                    <li>Para quitar un vehículo de la lista, usa el botón <strong>"Permitir acceso"</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarForm(id) {
+        document.getElementById("form_" + id).style.display = "block";
+    }
+
+    function ocultarForm(id) {
+        document.getElementById("form_" + id).style.display = "none";
+    }
+</script>
+
+<style>
+    /* Efectos hover */
+    table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    a[href="/Admin/Index"]:hover {
+        background: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1300px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        table th, table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .botones-formulario {
+            flex-direction: column;
+        }
+    }
+</style>

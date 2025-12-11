@@ -1,0 +1,414 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.RegistrosAcceso>
+
+@{
+    ViewData["Title"] = "Reporte Diario";
+    Layout = "_Layout";
+
+    DateTime fecha = ViewBag.FechaReporte;
+    int totalEntradas = ViewBag.TotalEntradas;
+    int totalSalidas = ViewBag.TotalSalidas;
+    int pendientes = ViewBag.Pendientes;
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);">
+        <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+            <i class="bi bi-clipboard-data"></i> Reporte Diario
+        </h2>
+        <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem;">
+            Análisis detallado de accesos para una fecha específica
+        </p>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 1: FILTRO DE FECHA -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #4b5563;">
+                <i class="bi bi-calendar-event"></i> Seleccionar Fecha
+            </h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <form method="get" action="/Admin/ReporteDiario" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">
+                        <i class="bi bi-calendar-check"></i> Fecha del Reporte
+                    </label>
+                    <input type="date" name="fecha" value="@fecha.ToString("yyyy-MM-dd")"
+                           style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; background: white; color: #4b5563;" />
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                    <button type="submit"
+                            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <i class="bi bi-search"></i> Buscar Reporte
+                    </button>
+
+                    <a href="/Admin/ReporteDiario?fecha=@DateTime.Today.ToString("yyyy-MM-dd")"
+                       style="background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; padding: 12px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                        <i class="bi bi-arrow-clockwise"></i> Hoy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 2: RESUMEN DEL DÍA -->
+    <!-- ============================================= -->
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #4b5563; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-graph-up"></i> Resumen del Día: @fecha.ToString("dddd, dd MMMM yyyy")
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <!-- Total Entradas -->
+            <div style="background: white; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Total Entradas</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #2563eb; margin: 8px 0;">@totalEntradas</div>
+                    </div>
+                    <i class="bi bi-door-open-fill" style="font-size: 32px; color: #60a5fa; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <!-- Total Salidas -->
+            <div style="background: white; border-left: 4px solid #10b981; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Total Salidas</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #059669; margin: 8px 0;">@totalSalidas</div>
+                    </div>
+                    <i class="bi bi-door-closed-fill" style="font-size: 32px; color: #34d399; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <!-- Pendientes -->
+            <div style="background: white; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Entradas Pendientes</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #d97706; margin: 8px 0;">@pendientes</div>
+                    </div>
+                    <i class="bi bi-clock-history" style="font-size: 32px; color: #fbbf24; opacity: 0.7;"></i>
+                </div>
+            </div>
+
+            <!-- Total Registros -->
+            <div style="background: white; border-left: 4px solid #8b5cf6; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Total Registros</div>
+                        <div style="font-size: 32px; font-weight: 700; color: #7c3aed; margin: 8px 0;">@Model?.Count</div>
+                    </div>
+                    <i class="bi bi-list-check" style="font-size: 32px; color: #a78bfa; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SECCIÓN 3: TABLA DE REGISTROS -->
+    <!-- ============================================= -->
+    <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+        <div style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #4b5563;">
+                    <i class="bi bi-table"></i> Registros del Día
+                </h3>
+                <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 0.95rem;">
+                    Detalle completo de entradas y salidas registradas
+                </p>
+            </div>
+
+            @if (Model != null && Model.Count > 0)
+            {
+                <div style="color: #6b7280; font-size: 14px; background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #e5e7eb;">
+                    <i class="bi bi-list-check"></i> @Model.Count registros
+                </div>
+            }
+        </div>
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <!-- Sin registros -->
+            <div style="padding: 60px 20px; text-align: center;">
+                <i class="bi bi-calendar-x" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No hay registros para esta fecha</p>
+                <p style="color: #9ca3af;">Selecciona otra fecha o revisa el día de hoy</p>
+            </div>
+        }
+        else
+        {
+            <!-- Tabla de registros -->
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                        <tr>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-clock"></i> Hora Entrada
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-clock-history"></i> Hora Salida
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-car-front"></i> Placa
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-person"></i> Visitante
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-house-door"></i> Destino
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-tags"></i> Tipo Acceso
+                            </th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #7c3aed; white-space: nowrap;">
+                                <i class="bi bi-info-circle"></i> Estado
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.2s;">
+                                <!-- Hora Entrada -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (r.FechaEntrada.HasValue)
+                                    {
+                                        <div style="font-weight: 600; color: #1f2937; background: #dbeafe; padding: 6px 10px; border-radius: 4px; display: inline-block;">
+                                            @r.FechaEntrada.Value.ToString("HH:mm")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic;">-</span>
+                                    }
+                                </td>
+
+                                <!-- Hora Salida -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (r.FechaSalida.HasValue)
+                                    {
+                                        <div style="font-weight: 600; color: #1f2937; background: #d1fae5; padding: 6px 10px; border-radius: 4px; display: inline-block;">
+                                            @r.FechaSalida.Value.ToString("HH:mm")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #fef3c7; color: #92400e; padding: 6px 10px; border-radius: 4px; font-size: 13px; font-weight: 500;">
+                                            <i class="bi bi-clock"></i> Pendiente
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- Placa -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(r.Vehiculo?.Placa))
+                                    {
+                                        <span style="background: #f1f5f9; font-family: monospace; padding: 6px 10px; border-radius: 4px; font-weight: 600; color: #1e40af; border: 1px solid #dbeafe;">
+                                            @r.Vehiculo.Placa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af;">-</span>
+                                    }
+                                </td>
+
+                                <!-- Visitante -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(r.Visitante?.Nombre))
+                                    {
+                                        <div style="font-weight: 500; color: #1f2937;">@r.Visitante.Nombre</div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #3b82f6; font-weight: 500;">Residente</span>
+                                    }
+                                </td>
+
+                                <!-- Destino -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (!string.IsNullOrEmpty(r.ResidenteDestino?.Unidad))
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-house" style="color: #8b5cf6;"></i>
+                                            <span style="font-weight: 500; color: #7c3aed;">@r.ResidenteDestino.Unidad</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af;">-</span>
+                                    }
+                                </td>
+
+                                <!-- Tipo Acceso -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="
+                                          @if (r.TipoAcceso == "Residente")
+                                        {
+                                              <text>background: #dbeafe; color: #1d4ed8;</text>
+                                          }
+                                                else if (r.TipoAcceso == "Visitante")
+                                                {
+
+                                              <text>background: #fef3c7; color: #92400e;</text>
+                                          }
+                                                else if (r.TipoAcceso == "Preaprobado")
+                                                {
+
+                                                    <text>background: #d1fae5; color: #065f46;</text>
+                                                }
+                                                else
+                                                {
+
+                                                    <text>background: #f3f4f6; color: #6b7280;</text>
+                                                }
+                                                padding: 6px 12px; border-radius: 12px; font-size: 13px; font-weight: 500;">
+                                                @r.TipoAcceso
+                                            </span>
+                                </td>
+
+                                <!-- Estado -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="
+                                          @if (r.EstadoAutorizacion == "Aprobado")
+                                        {
+                                              <text>background: #d1fae5; color: #065f46;</text>
+                                          }
+                                                else if (r.EstadoAutorizacion == "Rechazado")
+                                                {
+
+                                              <text>background: #fee2e2; color: #991b1b;</text>
+                                          }
+                                                else if (r.EstadoAutorizacion == "Pendiente")
+                                                {
+
+                                                    <text>background: #fef3c7; color: #92400e;</text>
+                                                }
+                                                else if (r.EstadoAutorizacion == "EnCurso")
+                                                {
+
+                                                    <text>background: #dbeafe; color: #1d4ed8;</text>
+                                                }
+                                                else
+                                                {
+
+                                                    <text>background: #f3f4f6; color: #6b7280;</text>
+                                                }
+                                                padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
+                                                @r.EstadoAutorizacion
+                                            </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pie de tabla -->
+            <div style="background: #f8fafc; padding: 15px 24px; border-top: 1px solid #e5e7eb;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="color: #6b7280; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Reporte generado el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- ============================================= -->
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <!-- ============================================= -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <a href="/Admin/Reportes"
+           style="background: #4b5563; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+            <i class="bi bi-arrow-left"></i> Regresar a Reportes
+        </a>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="/Admin/ReporteDiario?fecha=@fecha.AddDays(-1).ToString("yyyy-MM-dd")"
+               style="background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <i class="bi bi-chevron-left"></i> Día Anterior
+            </a>
+            <a href="/Admin/ReporteDiario?fecha=@fecha.AddDays(1).ToString("yyyy-MM-dd")"
+               style="background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                Día Siguiente <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    button:hover, a[href*="ReporteDiario"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+
+    a[href="/Admin/Reportes"]:hover {
+        background: #374151;
+        text-decoration: none;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .filtro-fecha {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+            .filtro-fecha input,
+            .filtro-fecha button,
+            .filtro-fecha a {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 15px !important;
+        }
+
+        table th, table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+
+        .navegacion-inferior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch !important;
+        }
+
+            .navegacion-inferior > div {
+                justify-content: center !important;
+            }
+    }
+
+    @@media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        .botones-navegacion {
+            flex-direction: column;
+            gap: 10px !important;
+        }
+    }
+</style>

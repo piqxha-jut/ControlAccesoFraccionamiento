@@ -1,0 +1,199 @@
+﻿@{
+    var userId = Context.Session.GetString("UserId");
+    var userRol = Context.Session.GetString("UserRol");
+    var userName = Context.Session.GetString("UserName");
+    var notificacionesPendientes = Context.Session.GetInt32("NotificacionesPendientes") ?? 0;
+
+    // Clase CSS según el rol
+    var rolClass = !string.IsNullOrEmpty(userRol) ? $"rol-{userRol.ToLower()}" : "";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Control de Acceso</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@rolClass">
+    <header>
+        <nav class="navbar navbar-mejorada navbar-expand-lg">
+            <div class="container-fluid">
+                <!-- Logo y nombre -->
+                <a class="navbar-brand navbar-brand-mejorada" href="#">
+                    <i class="bi bi-car-front-fill"></i>
+                    Control de Acceso
+                </a>
+
+                @if (!string.IsNullOrEmpty(userId))
+                {
+                    <!-- Botón para móviles -->
+                    <button class="navbar-toggler navbar-toggler-mejorada" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarPrincipal">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <!-- Menú principal -->
+                    <div class="collapse navbar-collapse navbar-collapse-mejorada" id="navbarPrincipal">
+
+                        <!-- Menú según rol (izquierda) -->
+                        <ul class="navbar-nav me-auto navbar-nav-mejorada">
+                            @if (userRol == "Admin")
+                            {
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Admin">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Admin/Reportes">
+                                        <i class="bi bi-graph-up"></i> Reportes
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Admin/Usuarios">
+                                        <i class="bi bi-people"></i> Usuarios
+                                    </a>
+                                </li>
+                            }
+                            else if (userRol == "Guardia")
+                            {
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Guardia">
+                                        <i class="bi bi-speedometer2"></i> Inicio
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Guardia/RegistrarEntrada">
+                                        <i class="bi bi-car-front-fill"></i> Entrada
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Guardia/RegistrarSalida">
+                                        <i class="bi bi-car-front"></i> Salida
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Guardia/ListaNegraDetectada">
+                                        <i class="bi bi-exclamation-triangle"></i> Alertas
+                                    </a>
+                                </li>
+                            }
+                            else if (userRol == "Residente")
+                            {
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Residente">
+                                        <i class="bi bi-house-door"></i> Mi Casa
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada position-relative">
+                                    <a class="nav-link nav-link-mejorada" href="/Residente/Notificaciones" style="position: relative;">
+                                        <i class="bi bi-bell"></i> Notificaciones
+
+                                        @if (notificacionesPendientes > 0)
+                                        {
+                                            <span style="
+                    position: absolute;
+                    top: 2px;
+                    right: 2px;
+                    width: 9px;
+                    height: 9px;
+                    background-color: #ef4444;
+                    border-radius: 50%;
+                    display: inline-block;
+                "></span>
+                                        }
+
+                                    </a>
+                                </li>
+                                <li class="nav-item nav-item-mejorada">
+                                    <a class="nav-link nav-link-mejorada" href="/Residente/Preaprobados">
+                                        <i class="bi bi-list-check"></i> Mis Visitantes
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+
+                        <!-- Información del usuario y configuración (derecha) -->
+                        <ul class="navbar-nav navbar-nav-mejorada">
+                            <li class="nav-item nav-item-mejorada">
+                                <div class="usuario-info">
+                                    <i class="bi bi-person-circle"></i>
+                                    <div>
+                                        <div style="font-size: 0.9rem;">@userName</div>
+                                        <span class="badge badge-rol badge-@userRol.ToLower()">@userRol</span>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="nav-item nav-item-mejorada dropdown">
+                                <a class="nav-link nav-link-mejorada dropdown-toggle" href="#"
+                                   data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-mejorada">
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-mejorada" href="/Auth/CambiarContrasena">
+                                            <i class="bi bi-key"></i> Cambiar Contraseña
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider-mejorada"></li>
+                                    <li>
+                                        <a class="dropdown-item dropdown-item-mejorada text-danger" href="/Auth/Logout">
+                                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido principal -->
+    <div class="container main-content">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-mejorado">
+        <div class="container">
+            &copy; @DateTime.Now.Year - Sistema de Control de Acceso - Fraccionamiento Residencial
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Script para marcar la página activa -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Marcar enlace activo según la URL actual
+            const currentUrl = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link-mejorada');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

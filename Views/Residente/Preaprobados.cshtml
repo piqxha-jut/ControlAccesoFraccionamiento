@@ -1,0 +1,410 @@
+﻿@model List<ControlAccesoFraccionamiento.Models.VehiculosPreaprobado>
+@{
+    ViewData["Title"] = "Vehículos Preaprobados";
+    Layout = "_Layout";
+    var hoy = ViewBag.Hoy as DateOnly? ?? DateOnly.FromDateTime(DateTime.Now);
+
+    // Precalcular estadísticas
+    int vigentes = 0;
+    int vencidos = 0;
+    int programados = 0;
+    int inactivos = 0;
+
+    if (Model != null)
+    {
+        foreach (var preaprobado in Model)
+        {
+            var vigente = preaprobado.Activo == true && preaprobado.FechaInicio <= hoy && preaprobado.FechaFin >= hoy;
+
+            if (vigente) vigentes++;
+            else if (preaprobado.Activo == false) inactivos++;
+            else if (preaprobado.FechaFin < hoy) vencidos++;
+            else if (preaprobado.FechaInicio > hoy) programados++;
+        }
+    }
+}
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 25px 15px;">
+    <!-- Encabezado -->
+    <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 12px; font-size: 1.8rem;">
+                    <i class="bi bi-check-circle-fill"></i> Vehículos Preaprobados
+                </h2>
+                <p style="margin: 10px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
+                    Gestiona los vehículos autorizados para ingresar sin solicitud
+                </p>
+            </div>
+            <a href="/Residente/Index"
+               style="background: rgba(255, 255, 255, 0.1); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.2s;">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    @if (Model != null && Model.Count > 0)
+    {
+        <!-- Estadísticas -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: white; border-left: 4px solid #10b981; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: #d1fae5; color: #059669; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">Total</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #065f46;">@Model.Count</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-left: 4px solid #10b981; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: #d1fae5; color: #059669; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">Vigentes</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #065f46;">@vigentes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: #fef3c7; color: #d97706; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">Vencidos</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #92400e;">@vencidos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: white; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="background: #dbeafe; color: #1d4ed8; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                        <i class="bi bi-calendar-plus"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #6b7280; text-transform: uppercase;">Programados</div>
+                        <div style="font-size: 28px; font-weight: 700; color: #1e40af;">@programados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de vehículos -->
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 18px 24px;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-table"></i> Lista de Vehículos Preaprobados
+                </h3>
+            </div>
+
+            <div style="overflow-x: auto; padding: 0 20px 20px;">
+                <table class="table table-hover" style="margin-bottom: 0; width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f0fdf4;">
+                        <tr>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Vehículo</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Placa</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Marca/Modelo</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Válido desde</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Válido hasta</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Notas</th>
+                            <th style="padding: 16px; font-weight: 600; color: #065f46; border-bottom: 1px solid #bbf7d0;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var preaprobado in Model)
+                        {
+                            var vigente = preaprobado.Activo == true &&
+                            preaprobado.FechaInicio <= hoy &&
+                            preaprobado.FechaFin >= hoy;
+
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 600; color: #1f2937;">
+                                        <i class="bi bi-car-front" style="color: #3b82f6; margin-right: 8px;"></i>
+                                        @preaprobado.Vehiculo?.Placa
+                                    </div>
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <span style="font-family: monospace; font-weight: bold; font-size: 1.1rem; background: #f3f4f6; padding: 6px 12px; border-radius: 6px;">
+                                        @preaprobado.Vehiculo?.Placa
+                                    </span>
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle; color: #4b5563;">
+                                    @if (!string.IsNullOrEmpty(preaprobado.Vehiculo?.Marca))
+                                    {
+                                        @($"{preaprobado.Vehiculo.Marca} {preaprobado.Vehiculo.Modelo}")
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic;">-</span>
+                                    }
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (preaprobado.FechaInicio.HasValue)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-calendar2-plus" style="color: #059669;"></i>
+                                            <span>@($"{preaprobado.FechaInicio.Value.Day:00}/{preaprobado.FechaInicio.Value.Month:00}/{preaprobado.FechaInicio.Value.Year}")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic;">-</span>
+                                    }
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (preaprobado.FechaFin.HasValue)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="bi bi-calendar2-check" style="color: #dc2626;"></i>
+                                            <span>@($"{preaprobado.FechaFin.Value.Day:00}/{preaprobado.FechaFin.Value.Month:00}/{preaprobado.FechaFin.Value.Year}")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #9ca3af; font-style: italic;">-</span>
+                                    }
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle; color: #4b5563; max-width: 250px;">
+                                    @(!string.IsNullOrEmpty(preaprobado.Notas) ? preaprobado.Notas : "-")
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (vigente)
+                                    {
+                                        <span style="background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-check-circle"></i> VIGENTE
+                                        </span>
+                                    }
+                                    else if (preaprobado.Activo == false)
+                                    {
+                                        <span style="background: #fee2e2; color: #991b1b; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-x-circle"></i> INACTIVO
+                                        </span>
+                                    }
+                                    else if (preaprobado.FechaFin < hoy)
+                                    {
+                                        <span style="background: #fef3c7; color: #92400e; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-clock-history"></i> VENCIDO
+                                        </span>
+                                    }
+                                    else if (preaprobado.FechaInicio > hoy)
+                                    {
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-calendar-plus"></i> PROGRAMADO
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #f3f4f6; color: #6b7280; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                            <i class="bi bi-question-circle"></i> DESCONOCIDO
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-check-circle"></i> Vehículos Preaprobados
+                </h3>
+            </div>
+
+            <div style="padding: 60px 20px; text-align: center;">
+                <i class="bi bi-car-front" style="font-size: 48px; color: #9ca3af; margin-bottom: 15px;"></i>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 10px;">No tienes vehículos preaprobados.</p>
+                <p style="color: #9ca3af; margin-bottom: 25px;">Contacta al administrador para autorizar vehículos de visitantes frecuentes.</p>
+            </div>
+        </div>
+    }
+
+    <!-- Información -->
+    <div style="background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 25px; margin-bottom: 30px;">
+        <h4 style="color: #374151; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-info-circle"></i> ¿Qué son los vehículos preaprobados?
+        </h4>
+
+        <p style="color: #4b5563; margin-bottom: 20px;">
+            Los vehículos preaprobados pueden ingresar <strong style="color: #065f46;">sin necesidad de solicitar permiso cada vez</strong>.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="background: #d1fae5; color: #065f46; min-width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-check-circle"></i>
+                </span>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">✅ VIGENTE</div>
+                    <div style="font-size: 14px; color: #6b7280;">El vehículo puede ingresar hoy sin autorización</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="background: #fef3c7; color: #92400e; min-width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-clock-history"></i>
+                </span>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">⏰ VENCIDO</div>
+                    <div style="font-size: 14px; color: #6b7280;">La preaprobación expiró, necesita nueva autorización</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="background: #dbeafe; color: #1e40af; min-width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-calendar-plus"></i>
+                </span>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">📅 PROGRAMADO</div>
+                    <div style="font-size: 14px; color: #6b7280;">La preaprobación aún no entra en vigencia</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="background: #fee2e2; color: #991b1b; min-width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="bi bi-x-circle"></i>
+                </span>
+                <div>
+                    <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">❌ INACTIVO</div>
+                    <div style="font-size: 14px; color: #6b7280;">La preaprobación fue desactivada manualmente</div>
+                </div>
+            </div>
+        </div>
+
+        <h5 style="color: #4b5563; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-arrow-repeat"></i> Flujo del sistema para vehículos preaprobados:
+        </h5>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">1</div>
+                <div style="font-weight: 500; color: #1f2937; margin-bottom: 5px;">Vehículo llega</div>
+                <div style="font-size: 13px; color: #6b7280;">A la caseta del fraccionamiento</div>
+            </div>
+
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">2</div>
+                <div style="font-weight: 500; color: #1f2937; margin-bottom: 5px;">Verificación</div>
+                <div style="font-size: 13px; color: #6b7280;">El guardia verifica la placa en tu lista</div>
+            </div>
+
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">3</div>
+                <div style="font-weight: 500; color: #1f2937; margin-bottom: 5px;">Si está VIGENTE</div>
+                <div style="font-size: 13px; color: #6b7280;">Ingresa directamente sin notificación</div>
+            </div>
+
+            <div style="text-align: center; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <div style="background: #dbeafe; color: #1d4ed8; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">4</div>
+                <div style="font-weight: 500; color: #1f2937; margin-bottom: 5px;">Si está VENCIDO</div>
+                <div style="font-size: 13px; color: #6b7280;">El guardia te envía notificación</div>
+            </div>
+        </div>
+
+        <div style="padding: 15px; background: #fef3c7; border-radius: 6px; border-left: 4px solid #f59e0b;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <i class="bi bi-lightbulb" style="color: #d97706; margin-top: 2px;"></i>
+                <div style="color: #92400e; font-size: 14px;">
+                    <strong>Nota:</strong> Para agregar o modificar vehículos preaprobados, contacta al administrador del sistema.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acceso rápido -->
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+        <a href="/Residente/Index"
+           style="background: #dbeafe; color: #1e40af; padding: 12px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+            <i class="bi bi-house-door"></i>
+            Dashboard Principal
+        </a>
+
+        <a href="/Residente/Notificaciones"
+           style="background: #fef3c7; color: #92400e; padding: 12px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+            <i class="bi bi-bell"></i>
+            Notificaciones
+        </a>
+
+        <a href="/Residente/Historial"
+           style="background: #e9d5ff; color: #7c3aed; padding: 12px 20px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500; transition: all 0.2s;">
+            <i class="bi bi-clock-history"></i>
+            Historial de Visitas
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Efectos hover */
+    a[href*="/Residente/"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    div[style*="text-align: center; padding: 15px; background: white;"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        div[style*="max-width: 1400px"] {
+            padding: 15px 10px;
+        }
+
+        .encabezado-superior {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+
+        div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+        }
+
+        div[style*="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))"] {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+        }
+
+        .table-responsive {
+            margin: 0 -10px;
+            padding: 0 10px;
+        }
+
+        .table th, .table td {
+            padding: 12px 8px !important;
+            font-size: 14px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .table th, .table td {
+            font-size: 12px !important;
+            padding: 10px 6px !important;
+        }
+
+        .access-links {
+            flex-direction: column;
+        }
+    }
+</style>
