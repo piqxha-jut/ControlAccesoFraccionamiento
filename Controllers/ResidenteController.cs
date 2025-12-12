@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ControlAccesoFraccionamiento.Data;
+﻿using ControlAccesoFraccionamiento.Data;
 using ControlAccesoFraccionamiento.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace ControlAccesoFraccionamiento.Controllers
 {
@@ -45,7 +46,7 @@ namespace ControlAccesoFraccionamiento.Controllers
 
             var residenteId = ObtenerResidenteId();
 
-            // Obtener datos del residente actual (AGREGAR ESTO)
+            // Obtener datos del residente actual
             var residente = _context.Residentes
                 .Include(r => r.Usuario)
                 .Include(r => r.VehiculosResidentes)
@@ -58,24 +59,44 @@ namespace ControlAccesoFraccionamiento.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // Contar notificaciones pendientes (esto ya lo tienes)
+            // Contar notificaciones pendientes
             ViewBag.NotificacionesPendientes = _context.Notificaciones
-            .Count(n => n.ResidenteId == residenteId && n.Estado == "enviado");
+                .Count(n => n.ResidenteId == residenteId && n.Estado == "enviado");
 
-            // Guardar también en sesión para que el Layout lo lea
             HttpContext.Session.SetInt32("NotificacionesPendientes", (int)ViewBag.NotificacionesPendientes);
 
-            // Obtener visitas recientes (AGREGAR ESTO también)
-            ViewBag.VisitasRecientes = _context.RegistrosAccesos
-                .Include(r => r.Vehiculo)
-                .Include(r => r.Visitante)
-                .Where(r => r.ResidenteDestinoId == residenteId)
-                .OrderByDescending(r => r.FechaEntrada)
-                .Take(5)
+            // =========================================================
+            // NUEVO: OBTENER TODOS LOS ACCESOS DEL RESIDENTE
+            // =========================================================
+
+            // 1. Obtener IDs de vehículos del residente
+            var vehiculosDelResidente = _context.VehiculosResidentes
+                .Where(vr => vr.ResidenteId == residenteId)
+                .Select(vr => vr.VehiculoId)
                 .ToList();
 
-            // Pasar el modelo a la vista (CAMBIAR ESTA LÍNEA)
-            return View(residente);  // ← ANTES era: return View();
+            // 2. Obtener TODOS los accesos relevantes:
+            // - Visitantes aprobados que van al residente
+            // - Entradas del propio residente
+            ViewBag.AccesosRecientes = _context.RegistrosAccesos
+                .Include(r => r.Vehiculo)
+                .Include(r => r.Visitante)
+                .Include(r => r.ResidenteDestino)
+                .Where(r =>
+                    // Caso 1: Visitantes que van al residente (aprobados)
+                    (r.ResidenteDestinoId == residenteId &&
+                     r.TipoAcceso == "visitante" &&
+                     r.EstadoAutorizacion == "aprobado") ||
+                    // Caso 2: Entradas del residente (sus propios vehículos)
+                    (vehiculosDelResidente.Contains(r.VehiculoId.Value) &&  // ← AQUÍ: .Value
+                     r.TipoAcceso == "residente" &&
+                     r.EstadoAutorizacion == "aprobado")
+                )
+                .OrderByDescending(r => r.FechaEntrada)
+                .Take(8)  // Un poco más que antes
+                .ToList();
+
+            return View(residente);
         }
 
         // =========================================================
@@ -224,7 +245,8 @@ namespace ControlAccesoFraccionamiento.Controllers
             var historial = _context.RegistrosAccesos
                 .Include(r => r.Vehiculo)
                 .Include(r => r.Visitante)
-                .Where(r => r.ResidenteDestinoId == residenteId)
+                .Where(r => r.ResidenteDestinoId == residenteId &&
+                       r.TipoAcceso == "visitante")  // ← ¡AGREGA ESTE FILTRO!
                 .OrderByDescending(r => r.FechaEntrada)
                 .Take(50)
                 .ToList();
@@ -278,6 +300,10 @@ namespace ControlAccesoFraccionamiento.Controllers
 
             var vehiculos = _context.VehiculosResidentes
                 .Include(vr => vr.Vehiculo)
+                    .ThenInclude(v => v.VehiculosListaNegras)
+                .Include(vr => vr.Vehiculo)
+                    .ThenInclude(v => v.RegistrosAccesos)  // ← ¡IMPORTANTE! Incluir registros
+                        .ThenInclude(ra => ra.ResidenteDestino)
                 .Where(vr => vr.ResidenteId == residenteId)
                 .ToList();
 

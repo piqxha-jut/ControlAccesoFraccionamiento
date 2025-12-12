@@ -104,6 +104,8 @@
                             <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #bfdbfe;">Tipo</th>
                             <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #bfdbfe;">Alias</th>
                             <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #bfdbfe;">Estado</th>
+                            <!-- NUEVA COLUMNA -->
+                            <th style="padding: 16px; font-weight: 600; color: #1e40af; border-bottom: 1px solid #bfdbfe;">Ubicación</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,6 +167,65 @@
                                         <span style="background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
                                             <i class="bi bi-check-circle"></i> ACTIVO
                                         </span>
+                                    }
+                                </td>
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @{
+                                        // Buscar el último registro de acceso para este vehículo
+                                        var ultimoRegistro = vehiculoResidente.Vehiculo?.RegistrosAccesos
+                                        ?.Where(r => r.EstadoAutorizacion == "aprobado")
+                                        ?.OrderByDescending(r => r.FechaEntrada)
+                                        ?.FirstOrDefault();
+
+                                        if (ultimoRegistro != null)
+                                        {
+                                            if (ultimoRegistro.EstadoAcceso == "dentro")
+                                            {
+                                                <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px; border-radius: 6px;">
+                                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                                        <i class="bi bi-signpost-fill" style="color: #f59e0b;"></i>
+                                                        <span style="font-weight: 600; color: #92400e;">DENTRO</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #92400e;">
+                                                        <div>
+                                                            <i class="bi bi-box-arrow-in-right"></i>
+                                                            Entrada: @ultimoRegistro.FechaEntrada?.ToString("dd/MM/yyyy HH:mm")
+                                                        </div>
+                                                        <div style="margin-top: 3px; font-size: 11px;">
+                                                            <i class="bi bi-house-door"></i>
+                                                            Unidad: @ultimoRegistro.ResidenteDestino?.Unidad
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (ultimoRegistro.EstadoAcceso == "salio" && ultimoRegistro.FechaSalida != null)
+                                            {
+                                                <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 10px; border-radius: 6px;">
+                                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                                        <i class="bi bi-signpost" style="color: #10b981;"></i>
+                                                        <span style="font-weight: 600; color: #065f46;">FUERA</span>
+                                                    </div>
+                                                    <div style="font-size: 12px; color: #065f46;">
+                                                        <div>
+                                                            <i class="bi bi-box-arrow-right"></i>
+                                                            Salida: @ultimoRegistro.FechaSalida?.ToString("dd/MM/yyyy HH:mm")
+                                                        </div>
+                                                        <div style="margin-top: 3px; font-size: 11px;">
+                                                            <i class="bi bi-clock-history"></i>
+                                                            Visitó: @ultimoRegistro.ResidenteDestino?.Unidad
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span style="color: #9ca3af; font-style: italic;">Sin registro reciente</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #9ca3af; font-style: italic;">Sin registros</span>
+                                        }
                                     }
                                 </td>
                             </tr>

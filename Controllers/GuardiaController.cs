@@ -204,14 +204,33 @@ namespace ControlAccesoFraccionamiento.Controllers
 
                 if (vehiculoResidente != null)
                 {
+                    // Obtener el residente dueño del vehículo
+                    var residentePropietario = _context.Residentes
+                        .FirstOrDefault(r => r.Id == vehiculoResidente.ResidenteId);
+
+                    if (residentePropietario == null)
+                    {
+                        TempData["Error"] = "❌ No se encontró información del residente propietario.";
+                        return RedirectToAction("RegistrarEntrada");
+                    }
+
+                    // Verificar que el residente esté activo
+                    if (residentePropietario.Activo != true)
+                    {
+                        TempData["Error"] = $"❌ El residente {residentePropietario.Unidad} está INACTIVO.";
+                        return RedirectToAction("RegistrarEntrada");
+                    }
+
+                    // IMPORTANTE: Para residentes, ResidenteId y ResidenteDestinoId deben ser el MISMO
+                    // No pueden "visitar" a otra unidad
                     var registro = new RegistrosAcceso
                     {
                         VehiculoId = vehiculo.Id,
                         TipoAcceso = "residente",
                         GuardiaId = ObtenerGuardiaId(),
-                        ResidenteId = vehiculoResidente.ResidenteId,
-                        ResidenteDestinoId = residenteDestino.Id,
-                        MotivoVisita = motivoVisita ?? "Visita",
+                        ResidenteId = residentePropietario.Id,
+                        ResidenteDestinoId = residentePropietario.Id,  // ¡MISMO QUE ResidenteId!
+                        MotivoVisita = "Entrada de residente",  // ← IGNORA COMPLETAMENTE lo que puso el guardia,
                         EstadoAutorizacion = "aprobado",
                         EstadoAcceso = "dentro",
                         FechaEntrada = DateTime.Now
@@ -220,7 +239,7 @@ namespace ControlAccesoFraccionamiento.Controllers
                     _context.RegistrosAccesos.Add(registro);
                     _context.SaveChanges();
 
-                    TempData["Mensaje"] = "Entrada de RESIDENTE registrada.";
+                    TempData["Mensaje"] = $"✅ Entrada de RESIDENTE registrada. Unidad: {residentePropietario.Unidad}";
                     return RedirectToAction("Index");
                 }
 

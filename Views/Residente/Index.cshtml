@@ -118,106 +118,123 @@
         </div>
     </div>
 
-    <!-- Sección: Mis Vehículos Registrados -->
-    <h3 style="color: #4b5563; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb;">
-        <i class="bi bi-car-front-fill" style="margin-right: 10px;"></i>Mis Vehículos Registrados
-    </h3>
-
-    @if (Model.VehiculosResidentes != null && Model.VehiculosResidentes.Any())
-    {
-        <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white;">
-                        <tr>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Placa</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Marca</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Modelo</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Color</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Alias</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var vr in Model.VehiculosResidentes)
-                        {
-                            <tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.2s;">
-                                <td style="padding: 16px; font-weight: 500; color: #1f2937;">@vr.Vehiculo?.Placa</td>
-                                <td style="padding: 16px; color: #4b5563;">@vr.Vehiculo?.Marca</td>
-                                <td style="padding: 16px; color: #4b5563;">@vr.Vehiculo?.Modelo</td>
-                                <td style="padding: 16px; color: #4b5563;">
-                                    <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ccc; vertical-align: middle; margin-right: 6px;"></span>
-                                    @vr.Vehiculo?.Color
-                                </td>
-                                <td style="padding: 16px;">
-                                    <span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 500;">
-                                        @vr.Alias
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 40px; text-align: center; margin-bottom: 40px;">
-            <i class="bi bi-car-front" style="font-size: 48px; color: #94a3b8; margin-bottom: 15px; display: block;"></i>
-            <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 15px;">No tienes vehículos registrados</p>
-            <a href="/Residente/Vehiculos" style="background: #0ea5e9; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="bi bi-plus-circle"></i> Registrar Vehículo
-            </a>
-        </div>
-    }
-
     <!-- Sección: Visitas Recientes -->
     <h3 style="color: #4b5563; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e5e7eb;">
-        <i class="bi bi-clock-history" style="margin-right: 10px;"></i>Visitas Recientes
+        <i class="bi bi-clock-history" style="margin-right: 10px;"></i>Accesos Recientes
     </h3>
 
-    @if (ViewBag.VisitasRecientes != null && ViewBag.VisitasRecientes.Count > 0)
+    @if (ViewBag.AccesosRecientes != null && ViewBag.AccesosRecientes.Count > 0)
     {
         <div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); margin-bottom: 40px;">
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
                         <tr>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">Tipo</th>
                             <th style="padding: 16px; text-align: left; font-weight: 600;">Fecha/Hora</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Visitante</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Vehículo</th>
-                            <th style="padding: 16px; text-align: left; font-weight: 600;">Motivo</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">Persona/Vehículo</th>
+                            <th style="padding: 16px; text-align: left; font-weight: 600;">Unidad</th>
                             <th style="padding: 16px; text-align: left; font-weight: 600;">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var visita in ViewBag.VisitasRecientes)
+                        @foreach (var acceso in ViewBag.AccesosRecientes)
                         {
                             <tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.2s;">
-                                <td style="padding: 16px; font-weight: 500; color: #1f2937;">
-                                    <i class="bi bi-calendar-event" style="margin-right: 6px; color: #6b7280;"></i>
-                                    @visita.FechaEntrada?.ToString("dd/MM/yyyy HH:mm")
-                                </td>
-                                <td style="padding: 16px; color: #4b5563;">@visita.Visitante?.Nombre</td>
-                                <td style="padding: 16px;">
-                                    <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 4px; font-family: monospace; font-weight: 500;">
-                                        @visita.Vehiculo?.Placa
-                                    </span>
-                                </td>
-                                <td style="padding: 16px; color: #4b5563;">@visita.MotivoVisita</td>
-                                <td style="padding: 16px;">
-                                    @if (visita.FechaSalida != null)
+                                <!-- Columna Tipo -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (acceso.TipoAcceso == "residente")
                                     {
-                                        <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
-                                            <i class="bi bi-check-circle" style="margin-right: 4px;"></i>
-                                            Salida: @visita.FechaSalida?.ToString("HH:mm")
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="bi bi-house-check"></i> RESIDENTE
                                         </span>
                                     }
                                     else
                                     {
-                                        <span style="background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 500;">
-                                            <i class="bi bi-clock" style="margin-right: 4px;"></i>
-                                            En fraccionamiento
+                                        <span style="background: #f3e8ff; color: #7c3aed; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="bi bi-person"></i> VISITANTE
+                                        </span>
+                                    }
+                                </td>
+
+                                <!-- Columna Fecha/Hora -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    <div style="font-weight: 500; color: #1f2937;">
+                                        <i class="bi bi-calendar-event" style="margin-right: 6px; color: #6b7280;"></i>
+                                        @acceso.FechaEntrada?.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                    @if (acceso.FechaSalida != null)
+                                    {
+                                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                                            <i class="bi bi-box-arrow-right"></i>
+                                            Salida: @acceso.FechaSalida?.ToString("HH:mm")
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Columna Persona/Vehículo -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (acceso.TipoAcceso == "residente")
+                                    {
+                                        <!-- Para residente: solo vehículo -->
+                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                            <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 4px; font-family: monospace; font-weight: 500; display: inline-block;">
+                                                @acceso.Vehiculo?.Placa
+                                            </span>
+                                            <div style="font-size: 12px; color: #6b7280;">
+                                                <i class="bi bi-car-front"></i> Vehículo registrado
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <!-- Para visitante: persona y vehículo -->
+                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                            <div style="font-weight: 500; color: #1f2937;">
+                                                @acceso.Visitante?.Nombre
+                                            </div>
+                                            <span style="background: #f1f5f9; padding: 4px 10px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: 500; display: inline-block;">
+                                                @acceso.Vehiculo?.Placa
+                                            </span>
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Columna Unidad -->
+                                <td style="padding: 16px; vertical-align: middle; color: #4b5563;">
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <i class="bi bi-house-door" style="color: #6b7280;"></i>
+                                        @acceso.ResidenteDestino?.Unidad
+                                    </div>
+                                    @if (acceso.TipoAcceso == "residente")
+                                    {
+                                        <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
+                                            (Tu unidad)
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Columna Estado -->
+                                <td style="padding: 16px; vertical-align: middle;">
+                                    @if (acceso.FechaSalida != null)
+                                    {
+                                        <span style="background: #d1fae5; color: #065f46; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="bi bi-check-circle"></i>
+                                            FUERA
+                                        </span>
+                                    }
+                                    else if (acceso.EstadoAcceso == "dentro")
+                                    {
+                                        <span style="background: #fef3c7; color: #92400e; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="bi bi-signpost-fill"></i>
+                                            DENTRO
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #f3f4f6; color: #6b7280; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                            <i class="bi bi-clock"></i>
+                                            PENDIENTE
                                         </span>
                                     }
                                 </td>
@@ -231,8 +248,11 @@
     else
     {
         <div style="background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; padding: 40px; text-align: center; margin-bottom: 40px;">
-            <i class="bi bi-person-x" style="font-size: 48px; color: #94a3b8; margin-bottom: 15px; display: block;"></i>
-            <p style="color: #64748b; font-size: 1.1rem;">No hay visitas recientes</p>
+            <i class="bi bi-clock-history" style="font-size: 48px; color: #94a3b8; margin-bottom: 15px; display: block;"></i>
+            <p style="color: #64748b; font-size: 1.1rem;">No hay accesos recientes</p>
+            <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 5px;">
+                Aquí aparecerán las entradas de tus vehículos y visitantes aprobados
+            </p>
         </div>
     }
 
